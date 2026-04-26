@@ -1674,6 +1674,10 @@ const IS_MOBILE = CrosswordShared.isMobileDevice();
         return this.cells[x] ? this.cells[x][y] : null;
       }
 
+      isAcross(cell_range) {
+        return cell_range.every(cell => cell.y === cell_range[0].y);
+      }
+
       setActiveWord(word) {
         if (word) {
           this.setSelectedWord(word);
@@ -1684,7 +1688,7 @@ const IS_MOBILE = CrosswordShared.isMobileDevice();
           }
           this.top_text.html(`
             <span class="cw-clue-number">
-              ${escape(word.clue.number)}
+              ${escape(word.clue.number)}${this.isAcross(word.cell_ranges) ? "A" : "D"}
             </span>
             <span class="cw-clue-text">
               ${escape(word.clue.text)}
