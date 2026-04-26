@@ -644,26 +644,17 @@ div.is-dragover {
 .cw-clue.active {
   background: #FFD700;
   color: var(--clue-active-text-color);
-  margin-right: 3px;
-  transition: all 0.1s ease-in-out;
 }
 
 .cw-clue.passive .cw-clue-number {
   background: #FFD700;
   color: var(--clue-passive-text-color);
-  margin-right: 3px;
-  transition: all 0.1s ease-in-out;
 }
 
 .cw-clue.completed {
   color: gray;
   opacity: 0.6;
   text-decoration: line-through;
-}
-
-.cw-clue:not(.active):not(.passive):hover {
-    background: var(--clue-hover-color);
-    transition: all 0.3s ease-in-out;
 }
 
 /** Input **/
