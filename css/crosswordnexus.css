@@ -50,9 +50,8 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 #cw-puzzle-grid {
   display: inline-block;
   width: auto;
-  margin-top: 65px;
+  margin-top: 70px; /* Increase to make the gap between clue box and puzzle larger */
   align-self: center;
-  box-shadow: var(--main-shadow);
   border-radius: 4px;
 }
 
@@ -78,10 +77,8 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
   margin-top: 25px;
   margin-bottom: 25px;
   margin-right: 25px;
-  box-shadow: var(--main-shadow);
   border-radius: 4px;
   padding-bottom: 10px;
-  /*mask-image: linear-gradient(to bottom, black calc(100% - 15px), transparent 100%);*/
 }
 
 .cw-clues-bottom {

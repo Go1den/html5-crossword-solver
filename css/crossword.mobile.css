@@ -204,7 +204,6 @@ html.mobile-mode {
   min-width: 0;
   max-width: 10em;
   text-align: center;
-  box-shadow: var(--main-shadow);
 }
 
 /* Hide buttons before they're moved by the mobile code */

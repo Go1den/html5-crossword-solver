@@ -9,8 +9,8 @@ This file contains shared styles always loaded (mobile or desktop)
 :root {
     /* Colors */
     --main-bg-color: #ffffff;
-    --header-bg-color: #E9E3DC;
-    --content-bg-color: #E9E3DC;
+    --header-bg-color: #0C0E1A;
+    --content-bg-color: #0C0E1A;
     --button-bg-color: #cbc4bd;
     --button-text-color: #000000;
     --button-hover-color: #B1A79C;
@@ -55,7 +55,7 @@ This file contains shared styles always loaded (mobile or desktop)
     /* Modals */
     --modal-header-bg-color: #999999;
     --modal-header-text-color: #000000;
-    --modal-content-bg-color: #E9E3DC;
+    --modal-content-bg-color: #0C0E1A;
     --modal-text-color: #000000;
 
     /* Keyboard */
@@ -69,9 +69,7 @@ This file contains shared styles always loaded (mobile or desktop)
     --timer-paused-bgcolor: #ffc107;
     --timer-paused-text-color: #000000;
 
-    /* Shadows and Borders */
-    --main-shadow: 0px 2px 15px 6px rgba(0, 0, 0, 0.15);
-    --mobile-shadow: 0 -2px 6px var(--border-color);
+    /* Borders */
     --border-color: rgba(0, 0, 0, 0.1);
 }
 
@@ -368,7 +366,6 @@ div.is-dragover {
 .cw-menu {
   background-color: var(--button-menu-bg-color);
   border: 1px solid var(--border-color);
-  box-shadow: var(--main-shadow);
   padding: 0.2em 0;
   position: absolute;
   z-index: 1;
@@ -448,7 +445,6 @@ div.is-dragover {
   font-weight: 500;
   border: none;
   border-radius: 8px;
-  box-shadow: var(--main-shadow);
   transition: background-color 0.25s ease, transform 0.1s ease;
   cursor: pointer;
   display: inline-flex;
@@ -472,7 +468,6 @@ div.is-dragover {
   background-color: var(--button-background-color-hover);
   color: var(--button-hover-text-color);
   transform: translateY(-1px);
-  box-shadow: var(--main-shadow);
 }
 
 .cw-button-timer:hover, .cw-button-notepad:hover {
@@ -481,7 +476,6 @@ div.is-dragover {
 
 .cw-button:active {
   transform: translateY(0);
-  box-shadow: var(--main-shadow);
 }
 
 /* large button for initial overlay */
@@ -587,7 +581,6 @@ div.is-dragover {
   color: var(--top-text-wrapper-text-color);
   flex-shrink: 0;
   border-radius: 4px;
-  box-shadow: var(--main-shadow);
 }
 
 .cw-clue-number {

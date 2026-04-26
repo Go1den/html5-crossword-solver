@@ -1851,12 +1851,19 @@ const IS_MOBILE = CrosswordShared.isMobileDevice();
         const maxHeight = canvasRect.height - parseInt(svgTopMargin, 10);
         const maxWidth = canvasRect.width;
 
+        console.log("CELL SIZE BIOTCH1");
+        console.log(this.cell_size);
+
         this.cell_size = Math.floor(
           Math.min(
             maxWidth / this.grid_width,
-            maxHeight / this.grid_height
+            maxHeight / this.grid_height,
+            35
           )
         );
+
+        console.log("CELL SIZE BIOTCH2");
+        console.log(this.cell_size);
 
         const svgWidth = this.grid_width * this.cell_size;
         const svgHeight = this.grid_height * this.cell_size;
@@ -2182,6 +2189,8 @@ const IS_MOBILE = CrosswordShared.isMobileDevice();
           const cellX = (this.selected_cell.x - 1) * size;
           const cellY = (this.selected_cell.y - 1) * size;
           const pad = this.cell_size * 0.15; // smaller padding than before
+          console.log("CELL PAD BIOTCH");
+          console.log(pad);
           const cxAcross = cellX + size - pad;
           const cyAcross = cellY + pad * 1.1;
 
