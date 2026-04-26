@@ -102,7 +102,6 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 }
 
 .cw-clues-items::-webkit-scrollbar-track {
-  background-color: var(--main-bg-color);
   border-radius: 50px;
 }
 
@@ -114,14 +113,6 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 .cw-clues-items::-webkit-scrollbar-thumb:hover {
   background-color: var(--clue-scrollbar-color-thumb)
-}
-
-/* Firefox */
-@supports (-moz-appearance: none) {
-  .cw-clues-items {
-    scrollbar-width: thin;
-    scrollbar-color: var(--clue-scrollbar-color-thumb) var(--main-bg-color);
-  }
 }
 
 /* End custom scrollbar styling */
