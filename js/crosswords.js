@@ -2058,8 +2058,8 @@ const IS_MOBILE = CrosswordShared.isMobileDevice();
           const minScale = 0.25;
           const scale = Math.max(minScale, maxScale - 0.07 * (letterLength - 1));
           elements.letter.setAttribute('x', cellX + size / 2);
-          elements.letter.setAttribute('y', cellY + size * 0.77);
-          elements.letter.setAttribute('font-size', `${this.cell_size * scale}px`);
+          elements.letter.setAttribute('y', cellY + size * 0.90);
+          elements.letter.setAttribute('font-size', `${1 + (this.cell_size * scale)}px`);
         }
         if (elements.number) {
           elements.number.setAttribute('x', cellX + size * 0.1);
