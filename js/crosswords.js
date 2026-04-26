@@ -1855,9 +1855,6 @@ const IS_MOBILE = CrosswordShared.isMobileDevice();
         const maxHeight = canvasRect.height - parseInt(svgTopMargin, 10);
         const maxWidth = canvasRect.width;
 
-        console.log("CELL SIZE BIOTCH1");
-        console.log(this.cell_size);
-
         this.cell_size = Math.floor(
           Math.min(
             maxWidth / this.grid_width,
@@ -1865,9 +1862,6 @@ const IS_MOBILE = CrosswordShared.isMobileDevice();
             35
           )
         );
-
-        console.log("CELL SIZE BIOTCH2");
-        console.log(this.cell_size);
 
         const svgWidth = this.grid_width * this.cell_size;
         const svgHeight = this.grid_height * this.cell_size;
