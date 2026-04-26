@@ -75,8 +75,6 @@ const IS_MOBILE = CrosswordShared.isMobileDevice();
     var STORAGE_KEY = 'crossword_nexus_savegame';
     var SETTINGS_STORAGE_KEY = 'crossword_nexus_settings';
 
-    /*const PUZZLE_STORAGE_VERSION = 'v3';  // bump this anytime you change the structure*/
-
     // messages
     var MSG_SAVED = 'Crossword saved';
     var MSG_LOADED = 'Crossword loaded';
@@ -483,15 +481,7 @@ const IS_MOBILE = CrosswordShared.isMobileDevice();
 
         this.updateCSS(COLOR_WORD, COLOR_SELECTED);
 
-        /** enable dark mode if requested **/
-        if (this.config.dark_mode_enabled) {
-          document.body.classList.add('dark-mode');
-          this.updateCSS(COLOR_WORD, COLOR_SELECTED);
-        }
-
         this.cell_size = 40;
-        //this.top_text_height = 0;
-        //this.bottom_text_height = 0;
         this.grid_width = 0;
         this.grid_height = 0;
         this.cells = {};
@@ -614,7 +604,6 @@ const IS_MOBILE = CrosswordShared.isMobileDevice();
           fileInput.attr('accept', FILE_ACCEPT_EXTENSIONS);
         }
         this.top_text = this.root.find('div.cw-top-text');
-        //this.bottom_text = this.root.find('div.cw-bottom-text');
         this.clues_holder = this.root.find('div.cw-clues-holder');
         this.extra_clues_holder = this.root.find('div.cw-extra-clues-button-holder');
         this.toptext = this.root.find('.cw-top-text-wrapper');
@@ -852,15 +841,6 @@ const IS_MOBILE = CrosswordShared.isMobileDevice();
 
         const versionKey = this.savegame_name + '_version';
         const savedVersion = localStorage.getItem(versionKey);
-
-        /*
-        if (savedVersion !== PUZZLE_STORAGE_VERSION) {
-          console.log('[Crossword] Savegame version mismatch. Clearing old localStorage.');
-          localStorage.removeItem(this.savegame_name);
-          localStorage.removeItem(this.savegame_name + "_notes");
-          localStorage.setItem(versionKey, PUZZLE_STORAGE_VERSION);
-        }
-        */
 
         const jsxw2_cells = this.loadGame();
         if (jsxw2_cells) {
@@ -1114,9 +1094,6 @@ const IS_MOBILE = CrosswordShared.isMobileDevice();
           `;
 
           holder.appendChild(div);
-
-          // Optionally attach scroll or resize logic
-          //group.bindElement(div.querySelector('.cw-clues-items'));
         });
 
         // === Build words ===
@@ -1344,9 +1321,6 @@ const IS_MOBILE = CrosswordShared.isMobileDevice();
         clues.forEach(clue => {
           clue.style.width = useColumn ? 'auto' : '';
         });
-
-        // optional debug log
-        // console.log(`→ avgWidth=${avgWidth.toFixed(1)}, layout=${useColumn ? 'column' : 'row'}`);
       }
 
       remove() {
