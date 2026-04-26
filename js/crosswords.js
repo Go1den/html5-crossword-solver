@@ -472,7 +472,7 @@ const IS_MOBILE = CrosswordShared.isMobileDevice();
           setContrastText("--clue-passive-text-color", cluePassiveColor);
 
           const topTextBgColor = Color.applyHsvTransform(wordColor, { dh: -8.62, ks: 0.157, kv: 1.004 });
-          root.style.setProperty("--top-text-wrapper-bg-color", topTextBgColor);
+          root.style.setProperty("--top-text-wrapper-bg-color", '#FFD700');
           setContrastText("--top-text-wrapper-text-color", topTextBgColor);
 
           // Scrollbars
