@@ -39,10 +39,10 @@ const IS_MOBILE = CrosswordShared.isMobileDevice();
     'use strict';
 
     var default_config = {
-      color_selected: '#FF4136',
-      color_word: '#FEE300',
+      color_selected: '#FFD700',
+      color_word: '#A7D8FF',
       color_none: '#FFFFFF',
-      background_color_clue: '#666666',
+      background_color_clue: '#FFD700',
       font_color_fill: '#000000',
       puzzle_file: null,
 
@@ -53,12 +53,12 @@ const IS_MOBILE = CrosswordShared.isMobileDevice();
       space_bar: 'space_clear',
       timer_autostart: false,
       confetti_enabled: true,
-      dark_mode_enabled: false,
+      dark_mode_enabled: true,
       tab_key: 'tab_noskip',
       bar_linewidth: 3.2,
       gray_completed_clues: false,
       min_sidebar_clue_width: 220,
-      save_game_limit: 10,
+      save_game_limit: 100,
       notepad_name: 'Notes',
       downsOnly: false,
     };
@@ -418,27 +418,18 @@ const IS_MOBILE = CrosswordShared.isMobileDevice();
         /* Update CSS values based on `color_word` and `color_selected`*/
         this.updateCSS = (word, selected) => {
           const root = document.documentElement;
-          const isDark = document.body.classList.contains('dark-mode');
 
           // If dark mode is on, darken the colors a bit (reduce Value by 15%)
           let wordColor = word;
           let selectedColor = selected;
-
-          if (isDark) {
-            wordColor = Color.applyHsvTransform(word, { kv: 0.85 });
-            selectedColor = Color.applyHsvTransform(selected, { kv: 0.85 });
-          }
 
           root.style.setProperty("--grid-selected-square-color", selectedColor);
           root.style.setProperty("--grid-selected-word-color", wordColor);
           root.style.setProperty("--grid-hilite-color", Color.applyHsvTransform(wordColor, { dh: -2.64, ks: 0.536, kv: 0.976 }));
 
           // For grid lines inside selected areas in dark mode
-          if (isDark) {
-            root.style.setProperty("--grid-selected-stroke-color", "rgba(0,0,0,0.2)");
-          } else {
-            root.style.setProperty("--grid-selected-stroke-color", "var(--grid-stroke-color)");
-          }
+          root.style.setProperty("--grid-selected-stroke-color", "var(--grid-stroke-color)");
+      
 
           // Helper for setting dynamic contrast text
           const setContrastText = (varName, bgColor) => {
@@ -456,11 +447,11 @@ const IS_MOBILE = CrosswordShared.isMobileDevice();
           setContrastText("--button-hover-text-color", buttonHoverColor);
 
           // Note & Timer Buttons
-          const noteBgColor = isDark ? "#333333" : "#EEEEEE";
-          const noteHoverBgColor = isDark ? "#444444" : "#999999";
+          const noteBgColor = "#EEEEEE";
+          const noteHoverBgColor = "#999999";
           root.style.setProperty("--button-note-timer-bg-color", noteBgColor);
           root.style.setProperty("--button-note-timer-hover-bg-color", noteHoverBgColor);
-          root.style.setProperty("--button-note-timer-border", isDark ? "#555555" : "#888888");
+          root.style.setProperty("--button-note-timer-border", "#888888");
           setContrastText("--button-note-timer-text-color", noteBgColor);
           setContrastText("--button-note-timer-hover-text-color", noteHoverBgColor);
 
@@ -474,9 +465,6 @@ const IS_MOBILE = CrosswordShared.isMobileDevice();
 
           // Clues
           let clueActiveColor = Color.applyHsvTransform(wordColor, { dh: 0.13, ks: 0.753, kv: 1.004 });
-          if (isDark) {
-            clueActiveColor = Color.averageColors(clueActiveColor, '#808080', 0.75); // 75% original, 25% gray
-          }
           root.style.setProperty("--clue-active-color", clueActiveColor);
           setContrastText("--clue-active-text-color", clueActiveColor);
 
@@ -1201,7 +1189,6 @@ const IS_MOBILE = CrosswordShared.isMobileDevice();
               : ''
           }
           <span class="cw-flex-spacer"></span>
-          <span class="cw-copyright">${escape(this.copyright)}</span>
         `);
 
         this.notepad_icon = this.root.find('.cw-button-notepad');
@@ -1818,10 +1805,6 @@ const IS_MOBILE = CrosswordShared.isMobileDevice();
               <span class="cw-clue-number">${escape(clue.number)}</span>
               <span class="cw-clue-text">
                 ${escape(clue.text)}
-                <div class="cw-edit-container" style="display: none;">
-                  <input class="cw-input note-style" type="text">
-                </div>
-                <span class="cw-cluenote-button" style="display: none;"></span>
               </span>
             </div>
           `);
@@ -1838,7 +1821,6 @@ const IS_MOBILE = CrosswordShared.isMobileDevice();
           const clueNote = notes.get(clue.word);
           if (clueNote !== undefined) {
             clue_el.find('.cw-input').val(clueNote);
-            clue_el.find('.cw-edit-container').show();
           }
 
           $items.append(clue_el);
@@ -1861,13 +1843,10 @@ const IS_MOBILE = CrosswordShared.isMobileDevice();
           .on('mouseleave', '.cw-clue', function(event) {
             const $el = $(this);
             const relatedTarget = event.relatedTarget;
-            const isInsideNote = $(relatedTarget).closest('.cw-edit-container').length > 0;
-            if (!isInsideNote) $el.find('.cw-cluenote-button').hide();
           })
           .on('click', '.cw-cluenote-button', function(event) {
             event.stopPropagation();
             const $clue = $(this).closest('.cw-clue');
-            $clue.find('.cw-edit-container').show().find('.cw-input').focus();
             $(this).hide();
           })
           .on('click', '.cw-input', function(event) {
@@ -1886,7 +1865,6 @@ const IS_MOBILE = CrosswordShared.isMobileDevice();
               if (newText.length > 0) {
                 notes.set(wordId, newText);
               } else {
-                $clue.find('.cw-edit-container').hide();
                 notes.delete(wordId);
               }
               save();
