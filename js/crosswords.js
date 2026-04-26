@@ -2062,9 +2062,9 @@ const IS_MOBILE = CrosswordShared.isMobileDevice();
           elements.letter.setAttribute('font-size', `${1 + (this.cell_size * scale)}px`);
         }
         if (elements.number) {
-          elements.number.setAttribute('x', cellX + size * 0.1);
-          elements.number.setAttribute('y', cellY + size * 0.3);
-          elements.number.setAttribute('font-size', `${size / 3.75}px`);
+          elements.number.setAttribute('x', cellX + size * 0.05);
+          elements.number.setAttribute('y', cellY + size * 0.35);
+          elements.number.setAttribute('font-size', `${(1 + (this.cell_size * .6))/2}px`);
         }
         if (elements.top_right_number) {
           elements.top_right_number.setAttribute('x', cellX + size * 0.9);
