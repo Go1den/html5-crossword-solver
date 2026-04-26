@@ -53,10 +53,10 @@ This file contains shared styles always loaded (mobile or desktop)
     --grid-letter-color: #000000;
 
     /* Modals */
-    --modal-header-bg-color: #999999;
+    --modal-header-bg-color: #FFD700;
     --modal-header-text-color: #000000;
     --modal-content-bg-color: #0C0E1A;
-    --modal-text-color: #000000;
+    --modal-text-color: #ffffff;
 
     /* Keyboard */
     --keyboard-bg-color: #ffffff;
@@ -541,6 +541,7 @@ div.is-dragover {
   flex-direction: column;
   white-space: nowrap;
   background-color: var(--content-bg-color);
+  color: #ffffff;
 }
 
 .cw-title,
