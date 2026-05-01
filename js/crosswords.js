@@ -146,59 +146,11 @@ const IS_MOBILE = CrosswordShared.isMobileDevice();
 
         </div>
         <!-- End overlay -->
-        <header class = "cw-header"></header>
+        <div class = "cw-header"></div>
         <div class = "cw-content">
           <!-- Placeholder for modal boxes -->
           <div    class = "cw-modal"></div>
           <div    class = "cw-grid">
-          <div    class = "cw-buttons-holder">
-          <div    class = "cw-menu-container">
-          <button type  = "button" class = "cw-button">
-            <span class="cw-button-icon">🗄️</span>
-                   File
-                  <span class = "cw-arrow"></span>
-                </button>
-                <div    class = "cw-menu">
-                <button class = "cw-menu-item cw-file-info">Info</button>
-                <button class = "cw-menu-item cw-file-notepad">Notepad</button>
-                <button class = "cw-menu-item cw-file-load">Open ...</button>
-                <button class = "cw-menu-item cw-file-print">Print</button>
-                <button class = "cw-menu-item cw-file-save">Save as iPuz</button>
-                <button class = "cw-menu-item cw-file-clear">Clear</button>
-                </div>
-              </div>
-              <div    class = "cw-menu-container cw-check">
-              <button type  = "button" class = "cw-button">
-                <span class="cw-button-icon">🔍</span>
-                   Check
-                  <span class = "cw-arrow"></span>
-                </button>
-                <div    class = "cw-menu">
-                <button class = "cw-menu-item cw-check-letter">Letter</button>
-                <button class = "cw-menu-item cw-check-word">Word</button>
-                <button class = "cw-menu-item cw-check-puzzle">Puzzle</button>
-                </div>
-              </div>
-              <div    class = "cw-menu-container cw-reveal">
-              <button type  = "button" class = "cw-button">
-                <span class="cw-button-icon">🎱</span>
-                   Reveal
-                  <span class = "cw-arrow"></span>
-                </button>
-                <div    class = "cw-menu">
-                <button class = "cw-menu-item cw-reveal-letter">Letter</button>
-                <button class = "cw-menu-item cw-reveal-word">Word</button>
-                <button class = "cw-menu-item cw-reveal-puzzle">Puzzle</button>
-                </div>
-              </div>
-
-              <button type = "button" class = "cw-button cw-settings-button">
-                <span class="cw-button-icon">⚙️</span>
-                 Settings
-              </button>
-              <span   class = "cw-flex-spacer"></span>
-              <button type  = "button" class = "cw-button cw-button-timer">00:00</button>
-            </div>
             <input type  = "text" class = "cw-hidden-input">
             <div   class = "cw-canvas">
             <div   class = "cw-puzzle-container">
@@ -612,6 +564,8 @@ const IS_MOBILE = CrosswordShared.isMobileDevice();
 
         this.hidden_input = this.root.find('input.cw-hidden-input');
         this.reveal_letter = this.root.find('.cw-reveal-letter');
+        console.log("lets do a log boys - reveal letter");
+        console.log(this.reveal_letter);
         this.reveal_word = this.root.find('.cw-reveal-word');
         this.reveal_puzzle = this.root.find('.cw-reveal-puzzle');
 
@@ -620,6 +574,8 @@ const IS_MOBILE = CrosswordShared.isMobileDevice();
         this.check_puzzle = this.root.find('.cw-check-puzzle');
 
         this.info_btn = this.root.find('.cw-file-info');
+        console.log("lets do a log boys");
+        console.log(this.info_btn);
         this.load_btn = this.root.find('.cw-file-load');
         // hide the load button by default
         this.load_btn.hide();
@@ -754,8 +710,8 @@ const IS_MOBILE = CrosswordShared.isMobileDevice();
         if (!rawTitle) return '';
         const title = rawTitle.trim().toUpperCase();
 
-        if (title === 'ACROSS') return 'Across';
-        if (title === 'DOWN') return 'Down';
+        if (title === 'ACROSS') return 'ACROSS';
+        if (title === 'DOWN') return 'DOWN';
 
         return rawTitle; // Preserve original if it's custom
       }
@@ -1165,7 +1121,54 @@ const IS_MOBILE = CrosswordShared.isMobileDevice();
                  </button>`
               : ''
           }
+          <span class="cw-button-span">
+            <div class="cw-buttons-holder">
+      <div class="cw-menu-container">
+          <button type="button" class="cw-button">
+              <span class="cw-button-icon">📝</span>File
+              <span class="cw-arrow"></span>
+          </button>
+          <div class="cw-menu">
+              <button class="cw-menu-item cw-file-info">Info</button>
+              <button class="cw-menu-item cw-file-notepad">Notepad</button>
+              <button class="cw-menu-item cw-file-load">Open ...</button>
+              <button class="cw-menu-item cw-file-print">Print</button>
+              <button class="cw-menu-item cw-file-save">Save as iPuz</button>
+              <button class="cw-menu-item cw-file-clear">Clear</button>
+          </div>
+      </div>
+      <div class="cw-menu-container cw-check">
+          <button type="button" class="cw-button">
+              Check
+              <span class="cw-arrow"></span>
+          </button>
+          <div class="cw-menu">
+              <button class="cw-menu-item cw-check-letter">Letter</button>
+              <button class="cw-menu-item cw-check-word">Word</button>
+              <button class="cw-menu-item cw-check-puzzle">Puzzle</button>
+          </div>
+      </div>
+      <div class="cw-menu-container cw-reveal">
+          <button type="button" class="cw-button">
+              Reveal
+              <span class="cw-arrow"></span>
+          </button>
+          <div class="cw-menu">
+              <button class="cw-menu-item cw-reveal-letter">Letter</button>
+              <button class="cw-menu-item cw-reveal-word">Word</button>
+              <button class="cw-menu-item cw-reveal-puzzle">Puzzle</button>
+          </div>
+      </div>
+
+      <button type="button" class="cw-button cw-settings-button">
+          Settings
+      </button>
+      <span class="cw-flex-spacer"></span>
+      <button type="button" class="cw-button cw-button-timer">00:00</button>
+  </div>
+          </span>
           <span class="cw-flex-spacer"></span>
+          
         `);
 
         this.notepad_icon = this.root.find('.cw-button-notepad');
@@ -1335,6 +1338,7 @@ const IS_MOBILE = CrosswordShared.isMobileDevice();
       }
 
       removeListeners() {
+        console.log("Removing listeners bitch??");
         this.removeGlobalListeners();
         this.root.undelegate();
         this.clues_holder.undelegate('div.cw-clues-items span');
@@ -1467,16 +1471,6 @@ const IS_MOBILE = CrosswordShared.isMobileDevice();
         // INFO
         this.info_btn.on('click', $.proxy(this.showInfo, this));
 
-        // PREV/NEXT BUTTONS FOR MOBILE
-        this.root.find('.cw-button-prev-clue').on('click', () => {
-          this.moveToNextWord(true, this.config.tab_key === 'tab_skip');
-          this.hidden_input.focus();
-        });
-        this.root.find('.cw-button-next-clue').on('click', () => {
-          this.moveToNextWord(false, this.config.tab_key === 'tab_skip');
-          this.hidden_input.focus();
-        });
-
         // NOTEPAD
         if (this.notepad) {
           this.notepad_icon.on('click', $.proxy(this.showNotepad, this));
@@ -1537,7 +1531,8 @@ const IS_MOBILE = CrosswordShared.isMobileDevice();
               }
             }
           }
-        });
+        }
+      );
       }
 
       handleClickWindow(event) {
@@ -1698,6 +1693,29 @@ const IS_MOBILE = CrosswordShared.isMobileDevice();
         }
       }
 
+      //Todo figure this out
+      replaceUnderscores(text) {
+        // let splits = text.split("_");
+        let last = "";
+        let result = "";
+        for(let i = 0; i < text.length; i++){
+          let char = text.charAt(i);
+          if(char != '_' || char !== last) {
+            result += char;
+            last = char;
+          }
+        }
+        console.log(result);
+
+        let underscores = (text.match(new RegExp("_", "g")) || []).length;
+        if (underscores > 0 && underscores % 2 == 0) {
+          console.log(text);
+          let split = text.split('_');
+          console.log(split);
+        }
+        return text;
+      }
+
       setActiveCell(cell) {
         if (!cell || cell.empty) return;
 
@@ -1750,7 +1768,7 @@ const IS_MOBILE = CrosswordShared.isMobileDevice();
             <div style="position: relative">
               <span class="cw-clue-number">${escape(clue.number)}</span>
               <span class="cw-clue-text">
-                ${escape(clue.text)}
+                ${this.replaceUnderscores(escape(clue.text))}
               </span>
             </div>
           `);
@@ -1780,20 +1798,9 @@ const IS_MOBILE = CrosswordShared.isMobileDevice();
         const save = () => this.saveGame();
 
         $items
-          .on('mouseenter', '.cw-clue', function() {
-            const $el = $(this);
-            if ($el.find('.cw-input').val().trim().length === 0) {
-              $el.find('.cw-cluenote-button').show();
-            }
-          })
           .on('mouseleave', '.cw-clue', function(event) {
             const $el = $(this);
             const relatedTarget = event.relatedTarget;
-          })
-          .on('click', '.cw-cluenote-button', function(event) {
-            event.stopPropagation();
-            const $clue = $(this).closest('.cw-clue');
-            $(this).hide();
           })
           .on('click', '.cw-input', function(event) {
             event.stopPropagation();
@@ -1853,7 +1860,8 @@ const IS_MOBILE = CrosswordShared.isMobileDevice();
         const canvasRect = this.canvas_holder.get(0).getBoundingClientRect();
         const svgTopMargin = getComputedStyle(this.svgContainer).marginTop;
         const maxHeight = canvasRect.height - parseInt(svgTopMargin, 10);
-        const maxWidth = canvasRect.width;
+        // const maxWidth = canvasRect.width;
+        const maxWidth = 544; /*This is arbitrary width of a NYT crossword */
 
         this.cell_size = Math.floor(
           Math.min(
@@ -3013,7 +3021,7 @@ const IS_MOBILE = CrosswordShared.isMobileDevice();
         const width = Math.round(bbox.width);
 
         wrapper.style.position = 'absolute';
-        wrapper.style.left = `${leftOffset}px`;
+        // wrapper.style.left = `${leftOffset}px`;
         wrapper.style.width = `${width}px`;
 
         // Optional debug log
@@ -3416,6 +3424,7 @@ const IS_MOBILE = CrosswordShared.isMobileDevice();
       }
 
       check_reveal(to_solve, reveal_or_check, e) {
+        console.log("reveal this bitch");
         var my_cells = [],
           cell;
 

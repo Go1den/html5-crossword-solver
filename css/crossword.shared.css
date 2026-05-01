@@ -8,7 +8,7 @@ This file contains shared styles always loaded (mobile or desktop)
 
 :root {
     /* Colors */
-    --main-bg-color: #ffffff;
+    --main-bg-color: #0C0E1A;
     --header-bg-color: #0C0E1A;
     --content-bg-color: #0C0E1A;
     --button-bg-color: #cbc4bd;
@@ -110,24 +110,6 @@ div.crossword {
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-.cw-cluenote-button {
-  position: absolute;
-  bottom: 4px;
-  right: 4px;
-  width: 16px;
-  height: 16px;
-  padding: 4px 4px;
-  border-radius: 4px;
-  background-color: none;
-  background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAAXAAAAFwBhyfMcAAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAACXSURBVDiNzdI9CsJQEEXhzyI7CP5sxYXYuA4t3JO9XbS21ARBXILgAoRYJA9CiOElNh6YZuDcO8UwjBkyPLEZ6EpwQdmYbayc1gFrvBsBrxh5iiv2HSFZrBwaQ8iq3i+GyO2QpE+eo+iQy3qfjmkucRt79p/LCfIvcqF6316WY5sDu19kOLTkPObswAQP3HHCEWfVr0fxAbSiWClHz+v4AAAAAElFTkSuQmCC');
-  background-position: center;
-  background-repeat: no-repeat;
-}
-
-.cw-cluenote-button:hover {
-  background-color: var(--cluenote-hilite-color);
-}
-
 div.cw-open-holder {
   position: absolute;
   top: 0;
@@ -202,6 +184,7 @@ div.is-dragover {
   position: absolute;
   right: 0;
   top: 0;
+  align-items: center;
 }
 
 .cw-main.loading {
@@ -590,13 +573,15 @@ div.is-dragover {
   min-width: 1.7rem;
   margin-left: 0.3rem;
   margin-right: 0.7rem;
-  font-weight: 600;
+  font-weight: bold;
+  font-size: 14px;
 }
 
 .cw-clue-text {
   flex: 1 1 auto;
   word-wrap: break-word;
   margin-right: 3px;
+  font-size: 14px;
 }
 
 /** Clues **/
@@ -618,7 +603,8 @@ div.is-dragover {
   padding: 4px 0;
   position: relative;
   font-weight: 600;
-  font-size: 1.2rem;
+  font-size: 14px;
+  border-bottom: 1px solid white;
 }
 
 .cw-clues-items {
@@ -727,7 +713,7 @@ input[type='radio'] {
 .cw-main {
     font-size: 19px;
 }
-
+/* 
 .cw-max-width-1200.cw-main {
   font-size: 18px;
 }
@@ -808,9 +794,9 @@ input[type='radio'] {
 
 .unmatched-clue-text {
   flex: 1;
-}
+} */
 
-.cw-max-width-650 .cw-header {
+/* .cw-max-width-650 .cw-header {
     display: none;
 }
 
@@ -827,4 +813,4 @@ input[type='radio'] {
 }
 .cw-max-width-420 .cw-buttons-holder .cw-button {
   font-size: 0.85rem;
-}
+} */
