@@ -16,8 +16,8 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 // Settings that we can save
 const CONFIGURABLE_SETTINGS = [
   "skip_filled_letters", "arrow_direction", "space_bar", "tab_key",
-  "timer_autostart", "dark_mode_enabled", "gray_completed_clues",
-  "confetti_enabled", "notepad_name",
+  "timer_autostart", "gray_completed_clues",
+  "confetti_enabled", "notepad_name", "fixed_puzzle_size"
 ];
 
 // Since DarkReader is an external library, make sure it exists
@@ -51,9 +51,8 @@ const IS_MOBILE = CrosswordShared.isMobileDevice();
       skip_filled_letters: true,
       arrow_direction: 'arrow_move_filled',
       space_bar: 'space_clear',
-      timer_autostart: false,
+      timer_autostart: true,
       confetti_enabled: true,
-      dark_mode_enabled: true,
       tab_key: 'tab_noskip',
       bar_linewidth: 3.2,
       gray_completed_clues: false,
@@ -61,6 +60,7 @@ const IS_MOBILE = CrosswordShared.isMobileDevice();
       save_game_limit: 100,
       notepad_name: 'Notes',
       downsOnly: false,
+      fixed_puzzle_size: true
     };
 
     // constants
@@ -1859,17 +1859,20 @@ const IS_MOBILE = CrosswordShared.isMobileDevice();
         // Responsive SVG sizing
         const canvasRect = this.canvas_holder.get(0).getBoundingClientRect();
         const svgTopMargin = getComputedStyle(this.svgContainer).marginTop;
-        const maxHeight = canvasRect.height - parseInt(svgTopMargin, 10);
-        // const maxWidth = canvasRect.width;
-        const maxWidth = 544; /*This is arbitrary width of a NYT crossword */
+        let maxHeight = 0;
+        let maxWidth = 0;
+        console.log(canvasRect);
 
-        this.cell_size = Math.floor(
-          Math.min(
-            maxWidth / this.grid_width,
-            maxHeight / this.grid_height,
-            35
-          )
-        );
+        // const maxWidth = 544; /*This is arbitrary width of a NYT crossword */
+        if (this.config.fixed_puzzle_size) {
+          maxHeight = canvasRect.height - parseInt(svgTopMargin, 10);
+          maxWidth = 544;
+          this.cell_size = Math.floor(Math.min(maxWidth / this.grid_width, maxHeight / this.grid_height, 35));
+        } else {
+          maxWidth = window.innerWidth;
+          maxHeight = window.innerHeight - 160;
+          this.cell_size = Math.floor(Math.min(maxWidth / this.grid_width, maxHeight / this.grid_height));
+        }
 
         const svgWidth = this.grid_width * this.cell_size;
         const svgHeight = this.grid_height * this.cell_size;
@@ -3228,8 +3231,8 @@ const IS_MOBILE = CrosswordShared.isMobileDevice();
             </div>
             <div class="settings-option">
               <label class="settings-label">
-                <input id="dark_mode_enabled" checked="" type="checkbox" name="dark_mode_enabled" class="settings-changer">
-                  Dark mode
+                <input id="fixed_puzzle_size" checked="" type="checkbox" name="fixed_puzzle_size" class="settings-changer">
+                  Fixed puzzle size
                 </input>
               </label>
             </div>
@@ -3257,17 +3260,16 @@ const IS_MOBILE = CrosswordShared.isMobileDevice();
               if (event.target.type === 'checkbox') {
                 this.config[event.target.name] = event.target.checked;
 
-                // Toggle dark mode via CSS class
-                if (event.target.name == 'dark_mode_enabled') {
-                  document.body.classList.toggle('dark-mode', event.target.checked);
-                  this.updateCSS(this.config.color_word, this.config.color_selected);
-                  this.renderCells();
-                }
-
                 // If the toggled setting is gray_completed_clues, re-render clues immediately
                 if (event.target.name === 'gray_completed_clues') {
                   this.styleClues();
                   this.syncTopTextWidth();
+                }
+
+                // If the toggled setting is fixed puzzle size, re-render puzzle immediately
+                if (event.target.name === 'fixed_puzzle_size') {
+                  this.updateClueLayout();
+                  this.renderCells();
                 }
 
               } else if (event.target.type === 'radio') {
