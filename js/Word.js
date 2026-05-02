@@ -9,6 +9,7 @@ class Word {
     this.cells = [];
     this.clue = {};
     this.crossword = crossword;
+    this.name = '';
     if (data) {
       if (
         data.hasOwnProperty('id') &&

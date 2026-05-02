@@ -1,30 +1,9 @@
-/**
-Copyright (c) 2025, Crossword Nexus & Crossweird LLC
-All rights reserved.
-
-Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
-
-1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
-
-2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
-
-3. Neither the name of the copyright holder nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
-
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-**/
-
 // Settings that we can save
 const CONFIGURABLE_SETTINGS = [
   "skip_filled_letters", "arrow_direction", "space_bar", "tab_key",
   "timer_autostart", "gray_completed_clues",
   "confetti_enabled", "notepad_name", "puzzle_size"
 ];
-
-// Since DarkReader is an external library, make sure it exists
-// (Removing DarkReader dependency)
-
-// one-time check for mobile device status
-const IS_MOBILE = false;
 
 // Main crossword javascript for the Crossword Nexus HTML5 Solver
 (function(global, factory) {
@@ -939,21 +918,24 @@ const IS_MOBILE = false;
             clue: clueMapping[word.id]
           });
         }
+        this.setAdditionalWordProperties();
+        this.completeLoad();
+      }
 
+      setAdditionalWordProperties() {
         // === Set word directions based on clue groups ===
         this.clueGroups.forEach(group => {
           // Determine direction from group title
           const dir = group.title.toUpperCase() === 'ACROSS' ? 'Across' : 'Down';
           
-          // Set dir on all words in this group
+          // Set dir on all words in this group, and set each word name
           group.words_ids.forEach(wordId => {
             if (this.words[wordId]) {
               this.words[wordId].dir = dir;
+              this.words[wordId].name = this.words[wordId].clue.number + "-" + dir;
             }
           });
         });
-
-        this.completeLoad();
       }
 
       // Return the next non-block, in-bounds cell from a start cell in a given direction.
@@ -1439,26 +1421,20 @@ const IS_MOBILE = false;
         // When the user clicks on <span> (x), close the modal
         span.onclick = function() {
           modal.style.display = 'none';
-          if (!IS_MOBILE) {
-            this_hidden_input.focus();
-          }
+          this_hidden_input.focus();
         };
         // When the user clicks anywhere outside of the modal, close it
         window.onclick = function(event) {
           if (event.target == modal) {
             modal.style.display = 'none';
-            if (!IS_MOBILE) {
-              this_hidden_input.focus();
-            }
+            this_hidden_input.focus();
           }
         };
         // Clicking the button should close the modal
         var modalButton = document.getElementById('modal-button');
         modalButton.onclick = function() {
           modal.style.display = 'none';
-          if (!IS_MOBILE) {
-            this_hidden_input.focus();
-          }
+          this_hidden_input.focus();
         };
       }
 
@@ -1592,9 +1568,7 @@ const IS_MOBILE = false;
           top: input_top,
         });
 
-        if (!IS_MOBILE) {
-          this.hidden_input.focus();
-        }
+        this.hidden_input.focus();
       }
 
       renderClues(clues_group, clues_container) {
@@ -2174,7 +2148,7 @@ const IS_MOBILE = false;
             clickedCell.type !== 'block'
           ) {
             this.toggleDiagramlessDir(); // <-- Step 2 helper
-            if (!IS_MOBILE) this.hidden_input.focus();
+            this.hidden_input.focus();
             return;
           }
 
@@ -2182,7 +2156,7 @@ const IS_MOBILE = false;
           this.setSelectedCell(clickedCell);
           this.setSelectedWord(null);
           this.top_text.html('');
-          if (!IS_MOBILE) this.hidden_input.focus();
+          this.hidden_input.focus();
           return; // prevent falling through to normal-puzzle logic
         }
 
@@ -2222,10 +2196,7 @@ const IS_MOBILE = false;
 
         // Update cell selection and redraw
         this.setActiveCell(clickedCell);
-
-        if (!IS_MOBILE) {
-          this.hidden_input.focus();
-        }
+        this.hidden_input.focus();
       }
 
       prepareRebus() {
@@ -2375,9 +2346,7 @@ const IS_MOBILE = false;
               this.updateCell(cell, {
                 shape: cell.shape === 'circle' ? null : 'circle'
               });
-              if (!IS_MOBILE) {
-                this.hidden_input.focus();
-              }
+              this.hidden_input.focus();
               prevent = true;
               break;
             }
@@ -2405,9 +2374,7 @@ const IS_MOBILE = false;
               // Renumber immediately
               this.renumberGrid();
 
-              if (!IS_MOBILE) {
-                this.hidden_input.focus();
-              }
+              this.hidden_input.focus();
             }
             prevent = true;
             break;
@@ -2427,9 +2394,7 @@ const IS_MOBILE = false;
               });
               this.autofill();
               this.checkIfSolved();
-              if (!IS_MOBILE) {
-                this.hidden_input.focus();
-              }
+              this.hidden_input.focus();
 
               let next_cell = null;
 
@@ -3435,9 +3400,7 @@ const IS_MOBILE = false;
 
         this.saveGame();
 
-        if (!IS_MOBILE) {
-          this.hidden_input.focus();
-        }
+        this.hidden_input.focus();
       }
 
       async printPuzzle(e) {
@@ -3514,17 +3477,13 @@ const IS_MOBILE = false;
           timer_btn.removeClass('running');
           timer_btn.addClass('paused');
           this.timer_running = false;
-          if (!IS_MOBILE) {
-            this.hidden_input.focus();
-          }
+          this.hidden_input.focus();
         } else {
           // Start the timer
           timer_btn.removeClass('paused');
           this.timer_running = true;
           timer_btn.addClass('running');
-          if (!IS_MOBILE) {
-            this.hidden_input.focus();
-          }
+          this.hidden_input.focus();
           timer();
         }
       }
