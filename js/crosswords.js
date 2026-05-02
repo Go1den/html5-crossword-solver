@@ -564,8 +564,6 @@ const IS_MOBILE = CrosswordShared.isMobileDevice();
 
         this.hidden_input = this.root.find('input.cw-hidden-input');
         this.reveal_letter = this.root.find('.cw-reveal-letter');
-        console.log("lets do a log boys - reveal letter");
-        console.log(this.reveal_letter);
         this.reveal_word = this.root.find('.cw-reveal-word');
         this.reveal_puzzle = this.root.find('.cw-reveal-puzzle');
 
@@ -574,8 +572,6 @@ const IS_MOBILE = CrosswordShared.isMobileDevice();
         this.check_puzzle = this.root.find('.cw-check-puzzle');
 
         this.info_btn = this.root.find('.cw-file-info');
-        console.log("lets do a log boys");
-        console.log(this.info_btn);
         this.load_btn = this.root.find('.cw-file-load');
         // hide the load button by default
         this.load_btn.hide();
@@ -736,8 +732,6 @@ const IS_MOBILE = CrosswordShared.isMobileDevice();
             lockedHandling: "mask"
           });
         }
-
-        //console.log(puzzle);
 
         puzzle.kind = puzzle.metadata.kind;
 
@@ -1070,8 +1064,6 @@ const IS_MOBILE = CrosswordShared.isMobileDevice();
           });
         }
 
-        //console.log(this);
-
         this.completeLoad();
       }
 
@@ -1314,7 +1306,6 @@ const IS_MOBILE = CrosswordShared.isMobileDevice();
         if (!clues.length) return;
 
         // apply layout
-        console.log(this.clues_holder);
         if (this.config.fixed_puzzle_size) {
           document.getElementsByClassName("cw-clues-holder")[0].style.maxHeight = '594px';
         } else {
@@ -1861,7 +1852,6 @@ const IS_MOBILE = CrosswordShared.isMobileDevice();
         const svgTopMargin = getComputedStyle(this.svgContainer).marginTop;
         let maxHeight = 0;
         let maxWidth = 0;
-        console.log(canvasRect);
 
         // const maxWidth = 544; /*This is arbitrary width of a NYT crossword */
         if (this.config.fixed_puzzle_size) {
@@ -2198,11 +2188,8 @@ const IS_MOBILE = CrosswordShared.isMobileDevice();
           const cellX = (this.selected_cell.x - 1) * size;
           const cellY = (this.selected_cell.y - 1) * size;
           const pad = this.cell_size * 0.15; // smaller padding than before
-          console.log("CELL PAD BIOTCH");
-          console.log(pad);
           const cxAcross = cellX + size - pad;
           const cyAcross = cellY + pad * 1.1;
-
           const cxDown = cellX + size - pad;
           const cyDown = cellY + size - pad * 1.1;
 
@@ -3426,7 +3413,6 @@ const IS_MOBILE = CrosswordShared.isMobileDevice();
       }
 
       check_reveal(to_solve, reveal_or_check, e) {
-        console.log("reveal this bitch");
         var my_cells = [],
           cell;
 
