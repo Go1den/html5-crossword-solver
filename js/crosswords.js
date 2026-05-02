@@ -427,8 +427,6 @@ const CONFIGURABLE_SETTINGS = [
         // TIMER
         this.timer_running = false;
 
-        this.diagramless_dir = 'across';
-
         // whether to show the reveal button
         this.has_reveal = true;
 
@@ -452,7 +450,6 @@ const CONFIGURABLE_SETTINGS = [
         this.selected_word = null;
         this.selected_cell = null;
         this.isSolved = false;
-        this.diagramless_mode = false;
         this.savegame_name = null;
         this.timer_running = false;
         this.xw_timer_seconds = 0;
@@ -628,42 +625,6 @@ const CONFIGURABLE_SETTINGS = [
         // Expose ipuz string
         window.ipuz = this.jsxw.toIpuzString();
 
-        this.diagramless_mode = false;
-
-        // 1. Trust metadata if available
-        if (puzzle.metadata && puzzle.metadata.crossword_type) {
-          if (puzzle.metadata.crossword_type.toLowerCase() === 'diagramless') {
-            this.diagramless_mode = true;
-            console.log('Diagramless detected: from metadata.crossword_type');
-          }
-        }
-
-        // 3. If diagramless, wipe all types BEFORE building cells
-        if (this.diagramless_mode) {
-          for (let i = 0; i < puzzle.cells.length; i++) {
-            const cell = puzzle.cells[i];
-            cell['top-bar'] = false;
-            cell['bottom-bar'] = false;
-            cell['left-bar'] = false;
-            cell['right-bar'] = false;
-
-            // Detect blocks manually
-            const sol = cell.solution?.trim().toUpperCase();
-            if (!sol || sol === '#' || sol === '.' || sol === '-') {
-              cell.solution = '#'; // treat it as a block
-            }
-
-            if (cell.solution === '#') {
-              cell.type = 'block';
-              cell.letter = '';
-            } else {
-              cell.type = null;
-              cell.letter = '';
-            }
-            cell.number = null;
-          }
-        }
-
         // Savegame
         const simpleHash = t => {
           let e = 0;
@@ -720,8 +681,8 @@ const CONFIGURABLE_SETTINGS = [
           this.is_autofill = true;
         }
 
-        if (this.crossword_type === 'diagramless' || this.crossword_type === 'coded') {
-          // top-text is meaningless for diagramless/coded puzzles
+        if (this.crossword_type === 'coded') {
+          // top-text is meaningless for coded puzzles
           $('div.cw-top-text-wrapper').css({
             display: 'none'
           });
@@ -810,17 +771,8 @@ const CONFIGURABLE_SETTINGS = [
             }
           }
 
-          if (this.diagramless_mode) {
-            c.type = null;
-            c.empty = false;
-            c.clue = false;
-            c.color = null;
-            c.letter = '';
-            c.number = null;
-          } else {
-            c.empty = (c.type === 'block' || c.type === 'void' || c.type === 'clue');
-            c.clue = (c.type === 'clue');
-          }
+          c.empty = (c.type === 'block' || c.type === 'void' || c.type === 'clue');
+          c.clue = (c.type === 'clue');
 
           if (!this.cells[c.x]) {
             this.cells[c.x] = {};
@@ -834,11 +786,6 @@ const CONFIGURABLE_SETTINGS = [
             }
             this.number_to_cells[key].push(c);
           }
-        }
-
-        // If diagramless, renumber
-        if (this.diagramless_mode) {
-          this.renumberGrid();
         }
 
         // === Build clues ===
@@ -938,40 +885,6 @@ const CONFIGURABLE_SETTINGS = [
         });
       }
 
-      // Return the next non-block, in-bounds cell from a start cell in a given direction.
-      // dir: 'across' (x+) or 'down' (y+). step = +1 (forward) or -1 (backward)
-      nextDiagramlessCell(fromCell, dir = this.diagramless_dir, step = 1) {
-        if (!fromCell) return null;
-        let {
-          x,
-          y
-        } = fromCell;
-
-        if (dir === 'across') {
-          for (let nx = x + step; nx >= 1 && nx <= this.grid_width; nx += step) {
-            const c = this.getCell(nx, y);
-            if (c && c.type !== 'block') return c;
-          }
-        } else {
-          for (let ny = y + step; ny >= 1 && ny <= this.grid_height; ny += step) {
-            const c = this.getCell(x, ny);
-            if (c && c.type !== 'block') return c;
-          }
-        }
-        return null;
-      }
-
-      setDiagramlessDir(dir) {
-        if (dir !== this.diagramless_dir) {
-          this.diagramless_dir = dir;
-          this.adjustChevron();
-        }
-      }
-
-      toggleDiagramlessDir() {
-        this.setDiagramlessDir((this.diagramless_dir === 'across') ? 'down' : 'across');
-      }
-
       completeLoad() {
         $('.cw-header').html(`
           <table>
@@ -1053,22 +966,6 @@ const CONFIGURABLE_SETTINGS = [
 
         this.notepad_icon = this.root.find('.cw-button-notepad');
 
-        // === Initial cell selection (diagramless) ===
-        if (this.diagramless_mode) {
-          const firstCell = this.getCell(1, 1);
-          if (firstCell) {
-            this.setSelectedCell(firstCell);
-            this.setSelectedWord(null);
-            this.top_text.html(''); // Clear top clue text
-            const initMessage = '[Diagramless Init]';
-            console.log(initMessage, {
-              selected_cell: this.selected_cell,
-              selected_word: this.selected_word,
-              top_text: this.top_text.html()
-            });
-          }
-        }
-
         (this.clueGroups || []).forEach(group => {
           // Find the container that matches this group’s ID
           const container = document.querySelector(`.cw-clues[data-group-id="${group.id}"] .cw-clues-items`);
@@ -1090,22 +987,12 @@ const CONFIGURABLE_SETTINGS = [
         this.renderCells();
         this.styleClues();
 
-        // === Post-render selection fallback ===
-        if (this.diagramless_mode) {
-          const firstCell = this.getCell(1, 1);
+        const first_word = this.clueGroups[this.activeClueGroupIndex].getFirstWord?.();
+        if (first_word) {
+          this.setActiveWord(first_word);
+          const firstCell = first_word.getFirstCell?.();
           if (firstCell) {
-            this.setSelectedCell(firstCell);
-            this.setSelectedWord(null);
-            this.top_text.html('');
-          }
-        } else {
-          const first_word = this.clueGroups[this.activeClueGroupIndex].getFirstWord?.();
-          if (first_word) {
-            this.setActiveWord(first_word);
-            const firstCell = first_word.getFirstCell?.();
-            if (firstCell) {
-              this.setActiveCell(firstCell);
-            }
+            this.setActiveCell(firstCell);
           }
         }
 
@@ -1330,10 +1217,6 @@ const CONFIGURABLE_SETTINGS = [
             const y = parseInt(e.target.getAttribute('data-y'));
             const clickedCell = this.getCell(x, y);
 
-            if (this.diagramless_mode) {
-              return; // prevent the normal puzzle branch below
-            }
-
             if (!clickedCell.empty) {
               const groups = this.clueGroups || [];
               const n = groups.length;
@@ -1543,6 +1426,7 @@ const CONFIGURABLE_SETTINGS = [
       }
 
       setActiveCell(cell) {
+        console.log("setActiveCell");
         if (!cell || cell.empty) return;
 
         this.setSelectedCell(cell);
@@ -1655,6 +1539,7 @@ const CONFIGURABLE_SETTINGS = [
 
       // Clears canvas and re-renders all cells
       renderCells() {
+        console.log("Rerender btich");
         const svg = this.svgContainer;
         svg.innerHTML = ''; // Clear SVG grid before redrawing
         this.svgElements = {cells: {}};
@@ -1723,7 +1608,6 @@ const CONFIGURABLE_SETTINGS = [
             this.adjustCellPosition(cell);
           }
         }
-        this.adjustChevron();
         setTimeout(() => this.syncTopTextWidth(), 0);
         this.setHeaderWidthToContentWidth();
       }
@@ -1738,6 +1622,7 @@ const CONFIGURABLE_SETTINGS = [
       }
 
       adjustCell(cell) {
+        console.log("adjusting my jock");
         if (!this.svgElements) {
           return;
         }
@@ -1994,64 +1879,6 @@ const CONFIGURABLE_SETTINGS = [
         if (!slash) {
           return;
         }
-
-        if (this.diagramless_mode) {
-          const solutionIsBlock = (cell.solution === '#');
-          const typeIsBlock = (cell.type === 'block');
-          if (solutionIsBlock !== typeIsBlock) {
-            slash.setAttribute('stroke', 'red');
-            slash.setAttribute('stroke-width', 2.5);
-          } else {
-            slash.setAttribute('stroke', 'var(--grid-none-text-color)');
-            slash.setAttribute('stroke-width', 2);
-          }
-        } else {
-          slash.setAttribute('stroke', 'var(--grid-none-text-color)');
-          slash.setAttribute('stroke-width', 2);
-        }
-      }
-
-      adjustChevron() {
-        if (!this.svgElements) {
-          return;
-        }
-        // Tiny direction chevron for diagramless
-        const showChevron = this.diagramless_mode && this.selected_cell;
-        if (showChevron && !this.svgElements.chevron) {
-          const path = this.svgElements.chevron = document.createElementNS(this.svgNS, 'path');
-          path.setAttribute('fill', 'none');
-          path.setAttribute('stroke', 'var(--grid-none-text-color)');
-          path.setAttribute('stroke-width', 1.3);
-          path.setAttribute('pointer-events', 'none');
-          this.svgContainer.appendChild(path);
-        } else if (!showChevron && this.svgElements.chevron) {
-          this.svgElements.chevron.parentNode.removeChild(this.svgElements.chevron);
-          delete this.svgElements.chevron;
-        }
-        if (this.svgElements.chevron) {
-          // slightly smaller overall
-          const size = this.cell_size;
-          const cellX = (this.selected_cell.x - 1) * size;
-          const cellY = (this.selected_cell.y - 1) * size;
-          const pad = this.cell_size * 0.15; // smaller padding than before
-          const cxAcross = cellX + size - pad;
-          const cyAcross = cellY + pad * 1.1;
-          const cxDown = cellX + size - pad;
-          const cyDown = cellY + size - pad * 1.1;
-
-          const d = (
-            this.diagramless_dir === 'across'
-            ? `M ${cxAcross - pad * 0.8} ${cyAcross - pad / 2}
-              L ${cxAcross} ${cyAcross}
-              L ${cxAcross - pad * 0.8} ${cyAcross + pad / 2}`
-              // ► chevron (upper-right corner)
-            : `M ${cxDown - pad / 2} ${cyDown - pad * 0.8}
-              L ${cxDown} ${cyDown}
-              L ${cxDown + pad / 2} ${cyDown - pad * 0.8}`
-              // ▼ chevron (lower-right corner)
-          );
-          this.svgElements.chevron.setAttribute('d', d);
-        }
       }
 
       cellFillColor(cell) {
@@ -2137,29 +1964,6 @@ const CONFIGURABLE_SETTINGS = [
 
         if (!clickedCell) return;
 
-        if (this.diagramless_mode) {
-          if (!clickedCell) return;
-
-          // If user clicks the same cell again, toggle direction (just like normal puzzles)
-          if (
-            this.selected_cell &&
-            this.selected_cell.x === index_x &&
-            this.selected_cell.y === index_y &&
-            clickedCell.type !== 'block'
-          ) {
-            this.toggleDiagramlessDir(); // <-- Step 2 helper
-            this.hidden_input.focus();
-            return;
-          }
-
-          // Otherwise, select the clicked cell without tying to any word
-          this.setSelectedCell(clickedCell);
-          this.setSelectedWord(null);
-          this.top_text.html('');
-          this.hidden_input.focus();
-          return; // prevent falling through to normal-puzzle logic
-        }
-
         // --- Normal puzzle mode ---
         const sameCellClicked =
           this.selected_cell &&
@@ -2200,7 +2004,7 @@ const CONFIGURABLE_SETTINGS = [
       }
 
       prepareRebus() {
-        if (this.selected_cell && (this.selected_word || this.diagramless_mode)) {
+        if (this.selected_cell && this.selected_word) {
           this.hidden_input.val('');
           var rebus_entry = prompt('Rebus Entry', '');
           this.hiddenInputChanged(rebus_entry);
@@ -2228,7 +2032,6 @@ const CONFIGURABLE_SETTINGS = [
             this.moveToFirstCell(false);
             break;
           case 37: // left
-            if (this.diagramless_mode) this.setDiagramlessDir('across'); // set BEFORE moving
             if (e.shiftKey) {
               this.skipToWord(SKIP_LEFT);
             } else {
@@ -2236,7 +2039,6 @@ const CONFIGURABLE_SETTINGS = [
             }
             break;
           case 38: // up
-            if (this.diagramless_mode) this.setDiagramlessDir('down'); // vertical mode (set BEFORE)
             if (e.shiftKey) {
               this.skipToWord(SKIP_UP);
             } else {
@@ -2244,7 +2046,6 @@ const CONFIGURABLE_SETTINGS = [
             }
             break;
           case 39: // right
-            if (this.diagramless_mode) this.setDiagramlessDir('across'); // set BEFORE moving
             if (e.shiftKey) {
               this.skipToWord(SKIP_RIGHT);
             } else {
@@ -2252,7 +2053,6 @@ const CONFIGURABLE_SETTINGS = [
             }
             break;
           case 40: // down
-            if (this.diagramless_mode) this.setDiagramlessDir('down'); // vertical mode (set BEFORE)
             if (e.shiftKey) {
               this.skipToWord(SKIP_DOWN);
             } else {
@@ -2261,15 +2061,6 @@ const CONFIGURABLE_SETTINGS = [
             break;
 
           case 32: // space
-
-            if (this.diagramless_mode) {
-              // Toggle direction in diagramless on Space
-              if (this.selected_cell) {
-                this.toggleDiagramlessDir();
-              }
-              break; // prevent falling into normal space behavior
-            }
-
             if (this.selected_cell && this.selected_word) {
               // check config
               if (this.config.space_bar === 'space_switch') {
@@ -2311,7 +2102,7 @@ const CONFIGURABLE_SETTINGS = [
             }
             break;
           case 45: // insert -- same as escape
-            if (this.selected_cell && (this.selected_word || this.diagramless_mode)) {
+            if (this.selected_cell && this.selected_word) {
               var rebus_entry = prompt('Rebus entry', '');
               this.hiddenInputChanged(rebus_entry);
             }
@@ -2351,31 +2142,6 @@ const CONFIGURABLE_SETTINGS = [
               break;
             }
 
-            if (this.diagramless_mode && this.selected_cell) {
-              const cell = this.selected_cell;
-
-              // Toggle block / white
-              if (cell.type === 'block') {
-                // It is currently a block: make it white again
-                this.updateCell(cell, {
-                  type: null,
-                  empty: false,
-                  letter: ''
-                });
-              } else {
-                // It is currently white: make it a block
-                this.updateCell(cell, {
-                  type: 'block',
-                  empty: true,
-                  letter: ''
-                });
-              }
-
-              // Renumber immediately
-              this.renumberGrid();
-
-              this.hidden_input.focus();
-            }
             prevent = true;
             break;
           default: {
@@ -2398,10 +2164,7 @@ const CONFIGURABLE_SETTINGS = [
 
               let next_cell = null;
 
-              if (this.diagramless_mode) {
-                // Move in the current diagramless direction (across or down)
-                next_cell = this.nextDiagramlessCell(this.selected_cell, this.diagramless_dir, +1);
-              } else if (this.selected_word) {
+              if (this.selected_word) {
                 // Regular crossword logic
                 if (this.config.skip_filled_letters && !this.selected_word.isFilled()) {
                   next_cell = this.selected_word.getFirstEmptyCell(
@@ -2440,11 +2203,7 @@ const CONFIGURABLE_SETTINGS = [
           });
           this.autofill();
 
-          if (this.diagramless_mode) {
-            // Move to the previous editable cell based on current diagramless direction
-            const prev = this.nextDiagramlessCell(this.selected_cell, this.diagramless_dir, -1);
-            if (prev) this.setActiveCell(prev);
-          } else if (this.selected_word) {
+          if (this.selected_word) {
             const prev_cell = this.selected_word.getPreviousCell(
               this.selected_cell.x,
               this.selected_cell.y
@@ -2532,8 +2291,7 @@ const CONFIGURABLE_SETTINGS = [
             cell = this.cells[i][j];
             // if found cell without letter or with incorrect letter - return
             if (
-              (!cell.empty && (!cell.letter || !isCorrect(cell.letter, cell.solution))) ||
-              (this.diagramless_mode && ((cell.type === 'block') !== (cell.solution === '#')))
+              !cell.empty && (!cell.letter || !isCorrect(cell.letter, cell.solution))
             ) {
               this.isSolved = false;
               return;
@@ -2725,18 +2483,6 @@ const CONFIGURABLE_SETTINGS = [
        * Works with any number of clue lists.
        */
       moveSelectionBy(delta_x, delta_y, jumping_over_black) {
-
-        // Diagramless mode
-        if (this.diagramless_mode && this.selected_cell) {
-          const x = this.selected_cell.x + delta_x;
-          const y = this.selected_cell.y + delta_y;
-          const new_cell = this.getCell(x, y);
-          if (new_cell) { // skip normal crossword movement logic
-            this.setSelectedCell(new_cell);
-          }
-          return;
-        }
-
         // Don't do anything if there's no selected cell
         if (!this.selected_cell) return;
 
@@ -2897,9 +2643,6 @@ const CONFIGURABLE_SETTINGS = [
         const group = this.clueGroups[groupIndex];
 
         if (!word) return;
-
-        if (this.diagramless_mode) return;
-
         const cell = word.getFirstEmptyCell() || word.getFirstCell();
         if (!cell) return;
 
@@ -3312,32 +3055,7 @@ const CONFIGURABLE_SETTINGS = [
               checked: false,
               revealed: false
             });
-            if (this.diagramless_mode) {
-              this.updateCell(c, {
-                type: null, // clear black squares too
-                empty: false
-              });
-            }
           } else if (reveal_or_check === 'reveal') {
-            if (this.diagramless_mode) {
-              if (c.solution === '#') {
-                this.updateCell(c, {
-                  type: 'block',
-                  empty: true,
-                  letter: ''
-                });
-              } else {
-                this.updateCell(c, {
-                  type: null,
-                  empty: false,
-                  letter: c.solution
-                });
-              }
-              this.updateCell(c, {
-                checked: false,
-                revealed: false
-              });
-            } else {
               // ✅ SAFEGUARD for normal puzzles: don't show "#" as a letter
               if (c.solution === '#') {
                 this.updateCell(c, {
@@ -3352,26 +3070,7 @@ const CONFIGURABLE_SETTINGS = [
                   checked: false
                 });
               }
-            }
           } else if (reveal_or_check === 'check') {
-            if (this.diagramless_mode) {
-              if (c.type === 'block') {
-                // If the user placed a black square
-                this.updateCell(c, {
-                  checked: c.solution != '#' // Mark wrong if not supposed to be a black square
-                });
-              } else if (c.letter) {
-                // User typed something — check the letter
-                this.updateCell(c, {
-                  checked: !isCorrect(c.letter, c.solution)
-                });
-              } else {
-                // Empty white square — leave unchecked
-                this.updateCell(c, {
-                  checked: false
-                });
-              }
-            } else {
               // Regular crossword
               if (c.letter) {
                 this.updateCell(c, {
@@ -3382,16 +3081,7 @@ const CONFIGURABLE_SETTINGS = [
                   checked: false
                 });
               }
-            }
           }
-        }
-
-        // After mass-reveal or clear, renumber
-        if (reveal_or_check === 'reveal' && this.diagramless_mode) {
-          this.renumberGrid();
-        }
-        if (reveal_or_check === 'clear' && this.diagramless_mode) {
-          this.renumberGrid();
         }
 
         if (reveal_or_check === 'reveal') {
@@ -3537,6 +3227,7 @@ const CONFIGURABLE_SETTINGS = [
       }
 
       setSelectedCell(new_cell) {
+        console.log("setSelectedCell");
         const prev_cell = this.selected_cell;
         if (prev_cell === new_cell) {
           return;
@@ -3552,7 +3243,6 @@ const CONFIGURABLE_SETTINGS = [
             this.adjustCell(linked_cell);
           }
         }
-        this.adjustChevron();
       }
 
       setSelectedWord(new_word) {

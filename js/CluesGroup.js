@@ -95,10 +95,6 @@ class CluesGroup {
 
   // in clues list, marks clue for word that has cell with given coordinates
   markActive(x, y, is_passive) {
-    // don't mark anything as active if diagramless
-    if (this.crossword.diagramless_mode) {
-      return;
-    }
     var classname = is_passive ? 'passive' : 'active',
       word = this.getMatchingWord(x, y),
       clue_el,

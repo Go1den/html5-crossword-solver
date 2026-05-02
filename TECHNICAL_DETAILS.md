@@ -41,10 +41,6 @@ Game progress is automatically saved to the browser's `localStorage`.
   - Hides the corresponding clue container in the UI.
   - This prevents the user from accidentally seeing across clues while focusing on the "Downs Only" challenge.
 
-### Diagramless Mode
-- Triggered by `crossword_type: 'diagramless'` in metadata.
-- **Behavior:** The grid is rendered without blocks initially (or as a plain field), and the "Top Clue" bar is hidden. Users must deduce the grid structure.
-
 ## 5. Development & Extension
 
 ### CSS & Theming
