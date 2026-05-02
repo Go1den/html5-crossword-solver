@@ -58,6 +58,7 @@
   display: flex;
   flex-shrink: 0;
   margin-top: 10px;
+  max-height: 594px;
   margin-bottom: 25px;
   border-radius: 4px;
   padding-bottom: 10px;
