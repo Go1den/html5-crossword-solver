@@ -114,8 +114,12 @@
 * behavior on the width of the root element, not the width of the overall
 * window.
 **/
-.cw-clues {
+.cw-clue-width-standard {
   width: 250px;
+}
+
+.cw-clue-width-large {
+  width: 400px;
 }
 
 .cw-puzzle-container {

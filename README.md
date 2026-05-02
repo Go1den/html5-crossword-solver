@@ -71,6 +71,7 @@ You can customize the solver's behavior by passing a parameters object. Here are
 | `puzzle_object`| `object`| `null` | A pre-parsed `jsxw` puzzle object to load directly. |
 | `skip_filled_letters` | `boolean` | `true` | If true, the cursor skips over already-filled cells. |
 | `arrow_direction`| `string` | `'arrow_move_filled'` | Controls how arrow keys behave (e.g., `'arrow_move_filled'` skips filled cells, `'arrow_always_move'` does not). |
+| `puzzle_size` | `string` | `'standard'` | Determines the layout of the screen (e.g. `'puzzle_size_standard'` is default, `'puzzle_size_large'` is designed for streams, and `'puzzle_size_full_screen'` tries to use as much space as possible) |
 | `space_bar` | `string` | `'space_clear'` | Defines the action of the spacebar (e.g., `'space_clear'` clears a cell, `'space_toggles_direction'` switches between Across/Down). |
 | `tab_key` | `string` | `'tab_noskip'` | Defines the behavior of the Tab key for navigating clues. |
 | `gray_completed_clues` | `boolean`| `false` | If true, clues are automatically grayed out when the corresponding word is filled. |

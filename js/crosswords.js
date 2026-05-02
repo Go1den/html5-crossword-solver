@@ -17,7 +17,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 const CONFIGURABLE_SETTINGS = [
   "skip_filled_letters", "arrow_direction", "space_bar", "tab_key",
   "timer_autostart", "gray_completed_clues",
-  "confetti_enabled", "notepad_name", "fixed_puzzle_size"
+  "confetti_enabled", "notepad_name", "puzzle_size"
 ];
 
 // Since DarkReader is an external library, make sure it exists
@@ -60,7 +60,7 @@ const IS_MOBILE = false;
       save_game_limit: 100,
       notepad_name: 'Notes',
       downsOnly: false,
-      fixed_puzzle_size: false
+      puzzle_size: 'puzzle_size_standard'
     };
 
     // constants
@@ -1289,10 +1289,24 @@ const IS_MOBILE = false;
         if (!clues.length) return;
 
         // apply layout
-        if (this.config.fixed_puzzle_size) {
+        if (this.config.puzzle_size === 'puzzle_size_standard') {
           document.getElementsByClassName("cw-clues-holder")[0].style.maxHeight = '594px';
+          document.getElementsByClassName("cw-clues")[0].classList.remove("cw-clue-width-large");
+          document.getElementsByClassName("cw-clues")[1].classList.remove("cw-clue-width-large");
+          document.getElementsByClassName("cw-clues")[0].classList.add("cw-clue-width-standard");
+          document.getElementsByClassName("cw-clues")[1].classList.add("cw-clue-width-standard");
+        } else if (this.config.puzzle_size === 'puzzle_size_large') {
+          document.getElementsByClassName("cw-clues-holder")[0].style.maxHeight = '788px';
+          document.getElementsByClassName("cw-clues")[0].classList.remove("cw-clue-width-standard");
+          document.getElementsByClassName("cw-clues")[1].classList.remove("cw-clue-width-standard");
+          document.getElementsByClassName("cw-clues")[0].classList.add("cw-clue-width-large");
+          document.getElementsByClassName("cw-clues")[1].classList.add("cw-clue-width-large");
         } else {
           document.getElementsByClassName("cw-clues-holder")[0].style.maxHeight  = '100%';
+          document.getElementsByClassName("cw-clues")[0].classList.remove("cw-clue-width-standard");
+          document.getElementsByClassName("cw-clues")[1].classList.remove("cw-clue-width-standard");
+          document.getElementsByClassName("cw-clues")[0].classList.add("cw-clue-width-large");
+          document.getElementsByClassName("cw-clues")[1].classList.add("cw-clue-width-large");
         }
         holder.style.flexDirection = 'row';
         clues.forEach(clue => {
@@ -1838,10 +1852,14 @@ const IS_MOBILE = false;
         let maxHeight = 0;
         let maxWidth = 0;
 
-        if (this.config.fixed_puzzle_size) {
+        if (this.config.puzzle_size === 'puzzle_size_standard') {
           maxHeight = canvasRect.height - parseInt(svgTopMargin, 10);
           maxWidth = 544;
           this.cell_size = Math.floor(Math.min(maxWidth / this.grid_width, maxHeight / this.grid_height, 35));
+        } else if (this.config.puzzle_size === 'puzzle_size_large') {
+          maxHeight = canvasRect.height - parseInt(svgTopMargin, 10);
+          maxWidth = 720;
+          this.cell_size = Math.floor(Math.min(maxWidth / this.grid_width, maxHeight / this.grid_height));
         } else {
           maxWidth = window.innerWidth;
           maxHeight = window.innerHeight - 160;
@@ -1873,17 +1891,10 @@ const IS_MOBILE = false;
         }
         this.adjustChevron();
         setTimeout(() => this.syncTopTextWidth(), 0);
-        // console.log("width before");
-        // console.log(document.getElementsByClassName("cw-header")[0]);
-        // console.log(document.getElementsByClassName("cw-content")[0]);
-        // document.getElementsByClassName("cw-header")[0].clientWidth = document.getElementsByClassName("cw-content")[0].clientWidth;
-        // console.log("width after");
-        // console.log(document.getElementsByClassName("cw-header")[0].style.width);
-        // console.log(document.getElementsByClassName("cw-content")[0].style.width);
-        this.setWidth();
+        this.setHeaderWidthToContentWidth();
       }
 
-      setWidth() {
+      setHeaderWidthToContentWidth() {
         let header = document.getElementsByClassName("cw-header")[0];
         let content = document.getElementsByClassName("cw-content")[0];
         if (header && content) {
@@ -3202,6 +3213,30 @@ const IS_MOBILE = false;
             </div>
           </div>
 
+          <!-- Puzzle size -->
+          <div class="settings-setting">
+            <div class="settings-description">
+              Puzzle Size
+            </div>
+            <div class="settings-option">
+              <label class="settings-label">
+                <input id="puzzle_size_standard" checked="" type="radio" name="puzzle_size" class="settings-changer">
+                  Standard
+                </input>
+              </label class="settings-label">
+              <label class="settings-label">
+                <input id="puzzle_size_large" checked="" type="radio" name="puzzle_size" class="settings-changer">
+                  Large
+                </input>
+              </label>
+              <label class="settings-label">
+                <input id="puzzle_size_full_screen" checked="" type="radio" name="puzzle_size" class="settings-changer">
+                  Full Screen
+                </input>
+              </label>
+            </div>
+          </div>
+
           <!-- Miscellaneous -->
           <div class="settings-setting">
             <div class="settings-description">
@@ -3218,13 +3253,6 @@ const IS_MOBILE = false;
               <label class="settings-label">
                 <input id="confetti_enabled" checked="" type="checkbox" name="confetti_enabled" class="settings-changer">
                   Confetti on solve
-                </input>
-              </label>
-            </div>
-            <div class="settings-option">
-              <label class="settings-label">
-                <input id="fixed_puzzle_size" checked="" type="checkbox" name="fixed_puzzle_size" class="settings-changer">
-                  Fixed puzzle size
                 </input>
               </label>
             </div>
@@ -3257,15 +3285,12 @@ const IS_MOBILE = false;
                   this.styleClues();
                   this.syncTopTextWidth();
                 }
-
-                // If the toggled setting is fixed puzzle size, re-render puzzle immediately
-                if (event.target.name === 'fixed_puzzle_size') {
+              } else if (event.target.type === 'radio') {
+                this.config[event.target.name] = event.target.id;
+                if (event.target.name === 'puzzle_size') {
                   this.updateClueLayout();
                   this.renderCells();
                 }
-
-              } else if (event.target.type === 'radio') {
-                this.config[event.target.name] = event.target.id;
               }
             }
             this.saveSettings();
