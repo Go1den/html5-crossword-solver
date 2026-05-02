@@ -73,6 +73,10 @@ This file contains shared styles always loaded (mobile or desktop)
     --border-color: rgba(0, 0, 0, 0.1);
 }
 
+table {
+  width: 100%;
+}
+
 .cw-main,
 .cw-main * {
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
@@ -401,11 +405,10 @@ div.is-dragover {
 .cw-buttons-holder {
   display: flex;
   flex-wrap: wrap;
-  justify-content: center;
+  justify-content: right;
   align-items: center;
   gap: 6px;
   margin: 5px auto;
-  padding: 0px 0px 6px 0px;
 }
 
 .cw-buttons-holder>*:not(:first-child) {

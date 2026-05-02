@@ -1072,12 +1072,12 @@ const IS_MOBILE = false;
         $('.cw-header').html(`
           <table>
           <tr>
-          <td>
+          <td class="cw-header-left">
           <span class="cw-title">${escape(this.title)}</span>
           <br>
           <span class="cw-author">${escape(this.author)}</span>
           </td>
-          <td>
+          <td class="cw-header-right">
           <span class="cw-button-span">
             <div class="cw-buttons-holder">
       <div class="cw-menu-container">
@@ -1116,15 +1116,15 @@ const IS_MOBILE = false;
               <button class="cw-menu-item cw-reveal-puzzle">Puzzle</button>
           </div>
       </div>
-
+      <button type="button" class="cw-button cw-rebus-button">
+          Rebus
+      </button>
       <button type="button" class="cw-button cw-settings-button">
           Settings
       </button>
-      <span class="cw-flex-spacer"></span>
       <button type="button" class="cw-button cw-button-timer">00:00</button>
   </div>
           </span>
-          <span class="cw-flex-spacer"></span>
           </td></tr></table>
           
         `);
@@ -1138,6 +1138,7 @@ const IS_MOBILE = false;
         this.save_btn = this.root.find('.cw-file-save');
         this.download_btn = this.root.find('.cw-file-download');
         this.notepad_btn = this.root.find('.cw-file-notepad');
+        this.rebus_button = this.root.find('.cw-rebus-button');
         this.timer_button = this.root.find('.cw-button-timer');
         this.reveal_letter = this.root.find('.cw-reveal-letter');
         this.reveal_word = this.root.find('.cw-reveal-word');
@@ -1330,7 +1331,7 @@ const IS_MOBILE = false;
         this.save_btn.off('click');
         this.download_btn.off('click');
         this.timer_button.off('click');
-
+        this.rebus_button.off('click');
         this.settings_btn.off('click');
 
         this.info_btn.off('click');
@@ -1436,6 +1437,9 @@ const IS_MOBILE = false;
 
         // TIMER
         this.timer_button.on('click', $.proxy(this.toggleTimer, this));
+
+        // REBUS
+        this.rebus_button.on('click', $.proxy(this.prepareRebus, this));
 
         // SETTINGS
         this.settings_btn.on('click', $.proxy(this.openSettings, this));
@@ -1834,7 +1838,6 @@ const IS_MOBILE = false;
         let maxHeight = 0;
         let maxWidth = 0;
 
-        // const maxWidth = 544; /*This is arbitrary width of a NYT crossword */
         if (this.config.fixed_puzzle_size) {
           maxHeight = canvasRect.height - parseInt(svgTopMargin, 10);
           maxWidth = 544;
@@ -1870,6 +1873,23 @@ const IS_MOBILE = false;
         }
         this.adjustChevron();
         setTimeout(() => this.syncTopTextWidth(), 0);
+        // console.log("width before");
+        // console.log(document.getElementsByClassName("cw-header")[0]);
+        // console.log(document.getElementsByClassName("cw-content")[0]);
+        // document.getElementsByClassName("cw-header")[0].clientWidth = document.getElementsByClassName("cw-content")[0].clientWidth;
+        // console.log("width after");
+        // console.log(document.getElementsByClassName("cw-header")[0].style.width);
+        // console.log(document.getElementsByClassName("cw-content")[0].style.width);
+        this.setWidth();
+      }
+
+      setWidth() {
+        let header = document.getElementsByClassName("cw-header")[0];
+        let content = document.getElementsByClassName("cw-content")[0];
+        if (header && content) {
+          let contentWidth = content.offsetWidth;
+          header.style.width = contentWidth + 'px';
+        }
       }
 
       adjustCell(cell) {
@@ -2343,6 +2363,14 @@ const IS_MOBILE = false;
         }
       }
 
+      prepareRebus() {
+        if (this.selected_cell && (this.selected_word || this.diagramless_mode)) {
+          this.hidden_input.val('');
+          var rebus_entry = prompt('Rebus Entry', '');
+          this.hiddenInputChanged(rebus_entry);
+        }
+      }
+
       keyPressed(e) {
         if (this.settings_open) {
           return;
@@ -2443,11 +2471,7 @@ const IS_MOBILE = false;
               e.preventDefault();
               this.toggleTimer();
             } else {
-              if (this.selected_cell && (this.selected_word || this.diagramless_mode)) {
-                this.hidden_input.val('');
-                var rebus_entry = prompt('Rebus entry', '');
-                this.hiddenInputChanged(rebus_entry);
-              }
+              this.prepareRebus();
             }
             break;
           case 45: // insert -- same as escape
