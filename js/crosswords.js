@@ -1070,27 +1070,25 @@ const IS_MOBILE = false;
 
       completeLoad() {
         $('.cw-header').html(`
+          <table>
+          <tr>
+          <td>
           <span class="cw-title">${escape(this.title)}</span>
-          <span class="cw-header-separator">&nbsp;•&nbsp;</span>
+          <br>
           <span class="cw-author">${escape(this.author)}</span>
-          ${
-            this.notepad
-              ? `<button class="cw-button cw-button-notepad">
-                   <span class="cw-button-icon">📝</span> ${this.config.notepad_name}
-                 </button>`
-              : ''
-          }
+          </td>
+          <td>
           <span class="cw-button-span">
             <div class="cw-buttons-holder">
       <div class="cw-menu-container">
           <button type="button" class="cw-button">
-              <span class="cw-button-icon">📝</span>File
+              File
               <span class="cw-arrow"></span>
           </button>
           <div class="cw-menu">
               <button class="cw-menu-item cw-file-info">Info</button>
               <button class="cw-menu-item cw-file-notepad">Notepad</button>
-              <button class="cw-menu-item cw-file-load">Open ...</button>
+              <button class="cw-menu-item cw-file-load">Open...</button>
               <button class="cw-menu-item cw-file-print">Print</button>
               <button class="cw-menu-item cw-file-save">Save as iPuz</button>
               <button class="cw-menu-item cw-file-clear">Clear</button>
@@ -1127,6 +1125,7 @@ const IS_MOBILE = false;
   </div>
           </span>
           <span class="cw-flex-spacer"></span>
+          </td></tr></table>
           
         `);
 
