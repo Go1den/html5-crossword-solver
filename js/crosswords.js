@@ -78,7 +78,7 @@ const CONFIGURABLE_SETTINGS = [
 
     var load_error = false;
 
-    var CROSSWORD_TYPES = ['crossword', 'coded', 'acrostic'];
+    var CROSSWORD_TYPES = ['crossword'];
     const FILE_ACCEPT_EXTENSIONS = '.puz,.xml,.jpz,.xpz,.ipuz,.cfp';
     const IS_IPAD_SAFARI_OR_FIREFOX = (function() {
       if (typeof navigator === 'undefined') {
@@ -602,9 +602,8 @@ const CONFIGURABLE_SETTINGS = [
        *
        * - Accepts either a JSCrossword object or raw string data.
        * - Normalizes coordinates (shift +1 to be 1-indexed).
-       * - Detects puzzle type (crossword, acrostic, coded).
+       * - Detects puzzle type (crossword).
        * - Initializes cells, words, and clues.
-       * - Enables autofill for acrostic/coded puzzles.
        */
       parsePuzzle(data) {
         // if it's already a JSCrossword, return it as-is
@@ -675,20 +674,6 @@ const CONFIGURABLE_SETTINGS = [
 
         if (this.title) {
           document.title = this.title + ' | Crossword Nexus Solver';
-        }
-        // Override default autofill setting for certain puzzle types
-        if (this.crossword_type == 'acrostic' || this.crossword_type == 'coded') {
-          this.is_autofill = true;
-        }
-
-        if (this.crossword_type === 'coded') {
-          // top-text is meaningless for coded puzzles
-          $('div.cw-top-text-wrapper').css({
-            display: 'none'
-          });
-
-          // No need to leave room for the top-text
-          $('#cw-puzzle-grid').css('margin-top', '3px');
         }
 
         // disable check and reveal in certain cases
@@ -2081,7 +2066,7 @@ const CONFIGURABLE_SETTINGS = [
                   letter: '',
                   checked: false
                 });
-                this.autofill();
+                this.saveGame();
                 const next_cell = this.selected_word.getNextCell(
                   this.selected_cell.x,
                   this.selected_cell.y
@@ -2113,7 +2098,7 @@ const CONFIGURABLE_SETTINGS = [
                 letter: '',
                 checked: false
               });
-              this.autofill();
+              this.saveGame();
             }
             // Update this.isSolved
             this.checkIfSolved();
@@ -2158,7 +2143,7 @@ const CONFIGURABLE_SETTINGS = [
                 letter: ch,
                 checked: false
               });
-              this.autofill();
+              this.saveGame();
               this.checkIfSolved();
               this.hidden_input.focus();
 
@@ -2201,7 +2186,7 @@ const CONFIGURABLE_SETTINGS = [
             letter: '',
             checked: false
           });
-          this.autofill();
+          this.saveGame();
 
           if (this.selected_word) {
             const prev_cell = this.selected_word.getPreviousCell(
@@ -2212,24 +2197,6 @@ const CONFIGURABLE_SETTINGS = [
           }
 
           this.checkIfSolved();
-        }
-      }
-
-      autofill() {
-        this.saveGame(); // keep saving
-
-        if (this.is_autofill && this.selected_cell) {
-          const key = this.selected_cell.number || this.selected_cell.top_right_number;
-          const same_number_cells = this.number_to_cells[key] || [];
-
-          for (const cell of same_number_cells) {
-            if (cell !== this.selected_cell) {
-              this.updateCell(cell, {
-                letter: this.selected_cell.letter,
-                checked: this.selected_cell.checked
-              });
-            }
-          }
         }
       }
 
@@ -2253,10 +2220,7 @@ const CONFIGURABLE_SETTINGS = [
             checked: false
           });
 
-          // If this is a coded or acrostic
-          // find all cells with this number
-          // and fill them with the same letter
-          this.autofill();
+          this.saveGame();
 
           // find empty cell, then next cell
           // Change this depending on config
