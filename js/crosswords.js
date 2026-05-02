@@ -60,7 +60,7 @@ const IS_MOBILE = CrosswordShared.isMobileDevice();
       save_game_limit: 100,
       notepad_name: 'Notes',
       downsOnly: false,
-      fixed_puzzle_size: true
+      fixed_puzzle_size: false
     };
 
     // constants

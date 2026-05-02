@@ -575,14 +575,14 @@ div.is-dragover {
   margin-left: 0.3rem;
   margin-right: 0.7rem;
   font-weight: bold;
-  font-size: 14px;
+  font-size: 0.8em;
 }
 
 .cw-clue-text {
   flex: 1 1 auto;
   word-wrap: break-word;
   margin-right: 3px;
-  font-size: 14px;
+  font-size: 0.8em;
 }
 
 /** Clues **/
