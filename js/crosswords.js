@@ -1313,16 +1313,16 @@ const IS_MOBILE = CrosswordShared.isMobileDevice();
         const clues = holder.querySelectorAll('.cw-clues');
         if (!clues.length) return;
 
-        const MIN_AVG_WIDTH = this.config.min_sidebar_clue_width || 220; // tweak this breakpoint
-
-        // available width per clue list
-        const avgWidth = holder.offsetWidth / clues.length;
-        const useColumn = avgWidth < MIN_AVG_WIDTH;
-
         // apply layout
-        holder.style.flexDirection = useColumn ? 'column' : 'row';
+        console.log(this.clues_holder);
+        if (this.config.fixed_puzzle_size) {
+          document.getElementsByClassName("cw-clues-holder")[0].style.maxHeight = '594px';
+        } else {
+          document.getElementsByClassName("cw-clues-holder")[0].style.maxHeight  = '100%';
+        }
+        holder.style.flexDirection = 'row';
         clues.forEach(clue => {
-          clue.style.width = useColumn ? 'auto' : '';
+          clue.style.width = '';
         });
       }
 

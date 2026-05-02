@@ -57,8 +57,6 @@
   color: white;
   display: flex;
   flex-shrink: 0;
-  max-height: 100%;
-  width: 42%;
   margin-top: 10px;
   margin-bottom: 25px;
   border-radius: 4px;
@@ -116,7 +114,7 @@
 * window.
 **/
 .cw-clues {
-  width: 350px;
+  width: 250px;
 }
 
 .cw-puzzle-container {
