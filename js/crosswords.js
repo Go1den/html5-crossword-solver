@@ -2295,8 +2295,6 @@ const CONFIGURABLE_SETTINGS = [
           });
         }
 
-        /* const winSound = new Audio('./sounds/hny.mp3');
-           winSound.play();*/
         const here = this
 
         function showSuccessMsg(rawMessage) {

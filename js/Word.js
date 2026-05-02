@@ -10,6 +10,7 @@ class Word {
     this.clue = {};
     this.crossword = crossword;
     this.name = '';
+    this.references = [];
     if (data) {
       if (
         data.hasOwnProperty('id') &&
@@ -23,12 +24,34 @@ class Word {
         this.clue = data.clue;
         this.clue.starred = data.clue.text.startsWith('*');
         this.clue.starredTheme = data.clue.text.toLowerCase().indexOf('starred clue') !== -1;
+        this.references = this.extractClueReferences(data.clue.text);
         this.parseRanges();
       } else {
         load_error = true;
       }
     }
   }
+
+  extractClueReferences(text) {
+    // 1. Find the explicit direction from something like "40-Across" or "12-Down"
+    const fullRefMatch = text.match(/\b\d+\-(Across|Down)\b/);
+    if (!fullRefMatch) return [];
+
+    const direction = fullRefMatch[1]; // "Across" or "Down"
+
+    // 2. Find all clue numbers that appear as "20-", "35-", "40-" etc.
+    const numberRegex = /\b(\d+)\-/g;
+    const clues = new Set();
+    let match;
+
+    while ((match = numberRegex.exec(text)) !== null) {
+        const num = match[1];
+        clues.add(`${num}-${direction}`);
+    }
+
+    return Array.from(clues);
+  }
+
 
   // Parses cell ranges and stores cells coordinates as array ['x1-y1', 'x1-y2' ...]
   parseRanges() {
