@@ -202,4 +202,20 @@ class Word {
       }
     }
   }
+
+  clone() {
+    const w = new Word(this.crossword, null);
+
+    w.id = this.id;
+    w.dir = this.dir;
+    w.name = this.name;
+
+    w.references = [...this.references];
+    w.cells = [...this.cells];
+    w.cell_ranges = JSON.parse(JSON.stringify(this.cell_ranges));
+    w.clue = JSON.parse(JSON.stringify(this.clue));
+
+    return w;
+  }
+
 }

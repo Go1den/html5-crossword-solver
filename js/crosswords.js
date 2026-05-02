@@ -20,6 +20,7 @@ const CONFIGURABLE_SETTINGS = [
     var default_config = {
       color_selected: '#FFD700',
       color_word: '#A7D8FF',
+      color_associated: '#FFECA0',
       color_none: '#FFFFFF',
       background_color_clue: '#FFD700',
       font_color_fill: '#000000',
@@ -343,17 +344,19 @@ const CONFIGURABLE_SETTINGS = [
         /* Update config values based on `color_word` */
         const COLOR_WORD = this.config.color_word;
         const COLOR_SELECTED = this.config.color_selected;
+        const COLOR_ASSOCIATED = this.config.color_associated;
 
-        /* Update CSS values based on `color_word` and `color_selected`*/
-        this.updateCSS = (word, selected) => {
+        /* Update CSS values based on `color_word` and `color_selected` and `color_associated`*/
+        this.updateCSS = (word, selected, associated) => {
           const root = document.documentElement;
 
-          // If dark mode is on, darken the colors a bit (reduce Value by 15%)
           let wordColor = word;
           let selectedColor = selected;
+          let associatedColor = associated;
 
           root.style.setProperty("--grid-selected-square-color", selectedColor);
           root.style.setProperty("--grid-selected-word-color", wordColor);
+          root.style.setProperty("--grid-associated-word-color", associatedColor);
           root.style.setProperty("--grid-hilite-color", Color.applyHsvTransform(wordColor, { dh: -2.64, ks: 0.536, kv: 0.976 }));
 
           // For grid lines inside selected areas in dark mode
@@ -410,7 +413,7 @@ const CONFIGURABLE_SETTINGS = [
           root.style.setProperty("--clue-scrollbar-color-thumb", Color.averageColors(selectedColor, '#333333', 0.5));
         };
 
-        this.updateCSS(COLOR_WORD, COLOR_SELECTED);
+        this.updateCSS(COLOR_WORD, COLOR_SELECTED, COLOR_ASSOCIATED);
 
         this.cell_size = 40;
         this.grid_width = 0;
@@ -421,6 +424,7 @@ const CONFIGURABLE_SETTINGS = [
         this.clueGroups = []; // array of clue groups
         this.activeClueGroupIndex = 0;
 
+        this.associated_words = [];
         this.selected_word = null;
         this.selected_cell = null;
         this.settings_open = false;
@@ -1411,7 +1415,6 @@ const CONFIGURABLE_SETTINGS = [
       }
 
       setActiveCell(cell) {
-        console.log("setActiveCell");
         if (!cell || cell.empty) return;
 
         this.setSelectedCell(cell);
@@ -1524,7 +1527,6 @@ const CONFIGURABLE_SETTINGS = [
 
       // Clears canvas and re-renders all cells
       renderCells() {
-        console.log("Rerender btich");
         const svg = this.svgContainer;
         svg.innerHTML = ''; // Clear SVG grid before redrawing
         this.svgElements = {cells: {}};
@@ -1607,7 +1609,6 @@ const CONFIGURABLE_SETTINGS = [
       }
 
       adjustCell(cell) {
-        console.log("adjusting my jock");
         if (!this.svgElements) {
           return;
         }
@@ -1878,6 +1879,8 @@ const CONFIGURABLE_SETTINGS = [
           return cell.shade_highlight_color || 'var(--grid-selected-word-color)';
         } else if (cell.color) {
           return cell.color;
+        } else if (this.associated_words.some(x => x.hasCell(cell.x, cell.y))) {
+          return 'var(--grid-associated-word-color)';
         } else {
           return 'var(--grid-none-color)';
         }
@@ -3149,6 +3152,18 @@ const CONFIGURABLE_SETTINGS = [
         });
       }
 
+      getAssociatedWords(word) {
+        let associated = [];
+        let tempWord = null;
+        for (const index in this.words) {
+          tempWord = this.words[index];
+          if (word.references.includes(tempWord.name)) {
+            associated.push(tempWord);
+          }
+        }
+        return associated;
+      }
+
       updateClueAppearance(clue, $el) {
         if (!clue) return;
 
@@ -3189,7 +3204,6 @@ const CONFIGURABLE_SETTINGS = [
       }
 
       setSelectedCell(new_cell) {
-        console.log("setSelectedCell");
         const prev_cell = this.selected_cell;
         if (prev_cell === new_cell) {
           return;
@@ -3208,7 +3222,6 @@ const CONFIGURABLE_SETTINGS = [
       }
 
       setSelectedWord(new_word) {
-        console.log(new_word);
         const prev_word = this.selected_word;
         if (prev_word === new_word) {
           return;
@@ -3222,9 +3235,24 @@ const CONFIGURABLE_SETTINGS = [
             this.adjustCell(word.getCellByCoordinates(coord));
           }
         }
+        let previous_associated_words = this.associated_words.map(w => w.clone());
+        this.associated_words = this.getAssociatedWords(this.selected_word);
+        if (previous_associated_words?.length) {
+          for (const word of previous_associated_words) {
+            for (const coord of word.cells) {
+              this.adjustCell(word.getCellByCoordinates(coord));
+            }
+          }
+        }
+        if (this.associated_words?.length) {
+          for (const word of this.associated_words) {
+            for (const coord of word.cells) {
+              this.adjustCell(word.getCellByCoordinates(coord));
+            }
+          }
+        }
       }
     }
-
 
     if (typeof define === 'function' && define.amd) {
       define('CrosswordNexus', [], function() {

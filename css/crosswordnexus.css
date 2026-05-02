@@ -23,14 +23,6 @@
   justify-content: center;
 }
 
-.cw-cell-starred {
-  background-color: #FFECA0;
-}
-
-.cw-cell-starred-theme {
-  background-color: #FFECA0;
-}
-
 .cw-grid {
   display: flex;
   flex: 0 0 auto;

@@ -42,6 +42,7 @@ This file contains shared styles always loaded (mobile or desktop)
     --grid-selected-square-text-color: #000000;
     --grid-selected-word-color: #A7D8FF;
     --grid-selected-word-text-color: #000000;
+    --grid-associated-word-color: #FFECA0;
     --grid-block-color: #212121;
     --grid-none-color: #FFFFFF;
     --grid-none-text-color: #000000;

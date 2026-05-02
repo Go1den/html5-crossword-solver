@@ -91,6 +91,7 @@ The following parameters allow you to change the solver's color scheme.
 |---|---|---|---|
 | `color_selected`| `string` | `'#FF4136'` | Background color of the currently selected cell. |
 | `color_word` | `string` | `'#FEE300'` | Background color for all other cells in the active word. |
+| `color_associated` | `string` | `'#FFECA0'` | Background color for all cells associated with the active clue. |
 | `color_none` | `string` | `'#FFFFFF'` | Default background color for empty cells. |
 | `background_color_clue` | `string`| `'#666666'` | Background color for block cells containing text. |
 | `font_color_fill`| `string` | `'#000000'` | Font color for filled letters. |
