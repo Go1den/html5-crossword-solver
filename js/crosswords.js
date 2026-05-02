@@ -24,7 +24,7 @@ const CONFIGURABLE_SETTINGS = [
 // (Removing DarkReader dependency)
 
 // one-time check for mobile device status
-const IS_MOBILE = CrosswordShared.isMobileDevice();
+const IS_MOBILE = false;
 
 // Main crossword javascript for the Crossword Nexus HTML5 Solver
 (function(global, factory) {
@@ -49,7 +49,7 @@ const IS_MOBILE = CrosswordShared.isMobileDevice();
       puzzle_object: null, // jsxw to load, if available
       puzzles: null,
       skip_filled_letters: true,
-      arrow_direction: 'arrow_move_filled',
+      arrow_direction: 'arrow_stay',
       space_bar: 'space_clear',
       timer_autostart: true,
       confetti_enabled: true,
@@ -560,33 +560,7 @@ const IS_MOBILE = CrosswordShared.isMobileDevice();
         this.extra_clues_holder = this.root.find('div.cw-extra-clues-button-holder');
         this.toptext = this.root.find('.cw-top-text-wrapper');
 
-        this.settings_btn = this.root.find('.cw-settings-button');
-
         this.hidden_input = this.root.find('input.cw-hidden-input');
-        this.reveal_letter = this.root.find('.cw-reveal-letter');
-        this.reveal_word = this.root.find('.cw-reveal-word');
-        this.reveal_puzzle = this.root.find('.cw-reveal-puzzle');
-
-        this.check_letter = this.root.find('.cw-check-letter');
-        this.check_word = this.root.find('.cw-check-word');
-        this.check_puzzle = this.root.find('.cw-check-puzzle');
-
-        this.info_btn = this.root.find('.cw-file-info');
-        this.load_btn = this.root.find('.cw-file-load');
-        // hide the load button by default
-        this.load_btn.hide();
-
-        this.print_btn = this.root.find('.cw-file-print');
-        this.clear_btn = this.root.find('.cw-file-clear');
-        this.save_btn = this.root.find('.cw-file-save');
-        this.download_btn = this.root.find('.cw-file-download');
-
-        // Notepad button is hidden by default
-        this.notepad_btn = this.root.find('.cw-file-notepad');
-        this.notepad_btn.hide();
-
-        this.timer_button = this.root.find('.cw-button-timer');
-        this.xw_timer_seconds = 0;
 
         // function to process uploaded files
         function processFiles(files) {
@@ -624,9 +598,6 @@ const IS_MOBILE = CrosswordShared.isMobileDevice();
           this.open_button = this.root.find('.cw-button-open-puzzle');
           this.file_input = this.root.find('input[type="file"]');
 
-          // show the load button
-          this.load_btn.show();
-
           this.open_button.on('click', () => {
             this.file_input.val('');
             this.file_input.click();
@@ -640,10 +611,6 @@ const IS_MOBILE = CrosswordShared.isMobileDevice();
               processFiles(files);
             }
           });
-
-          // Show PWA install button
-          const btn = this.root.find('#installAppBtn');
-          CrosswordShared.setupPWAInstallButton(btn);
 
           // drag-and-drop
           if (isAdvancedUpload) {
@@ -1163,6 +1130,23 @@ const IS_MOBILE = CrosswordShared.isMobileDevice();
           
         `);
 
+        // Reassign button references now that the header HTML has been inserted
+        this.settings_btn = this.root.find('.cw-settings-button');
+        this.info_btn = this.root.find('.cw-file-info');
+        this.load_btn = this.root.find('.cw-file-load');
+        this.print_btn = this.root.find('.cw-file-print');
+        this.clear_btn = this.root.find('.cw-file-clear');
+        this.save_btn = this.root.find('.cw-file-save');
+        this.download_btn = this.root.find('.cw-file-download');
+        this.notepad_btn = this.root.find('.cw-file-notepad');
+        this.timer_button = this.root.find('.cw-button-timer');
+        this.reveal_letter = this.root.find('.cw-reveal-letter');
+        this.reveal_word = this.root.find('.cw-reveal-word');
+        this.reveal_puzzle = this.root.find('.cw-reveal-puzzle');
+        this.check_letter = this.root.find('.cw-check-letter');
+        this.check_word = this.root.find('.cw-check-word');
+        this.check_puzzle = this.root.find('.cw-check-puzzle');
+
         this.notepad_icon = this.root.find('.cw-button-notepad');
 
         // === Initial cell selection (diagramless or fakeclues) ===
@@ -1181,7 +1165,6 @@ const IS_MOBILE = CrosswordShared.isMobileDevice();
           }
         }
 
-        //this.changeActiveClues();
         (this.displayClueGroups || this.clueGroups || []).forEach(group => {
           // Find the container that matches this group’s ID
           const container = document.querySelector(`.cw-clues[data-group-id="${group.id}"] .cw-clues-items`);
@@ -1329,7 +1312,6 @@ const IS_MOBILE = CrosswordShared.isMobileDevice();
       }
 
       removeListeners() {
-        console.log("Removing listeners bitch??");
         this.removeGlobalListeners();
         this.root.undelegate();
         this.clues_holder.undelegate('div.cw-clues-items span');
