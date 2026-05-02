@@ -81,16 +81,6 @@ You can customize the solver's behavior by passing a parameters object. Here are
 | `min_sidebar_clue_width` | `number`| `220` | Minimum width of the sidebar containing the clues. |
 | `save_game_limit` | `number`| `10` | Maximum number of saved games to keep in local storage. |
 
-
-### "Fake Clues" Feature
-The solver supports "fake clues," where clues can be manually grayed out by clicking on them. This is useful for puzzles where not all clues correspond to entries in the grid.
-
-This mode can be enabled in two ways:
-1.  **Globally:** Set `fakeclues: true` in the puzzle file's metadata. This makes *all* clues in the puzzle "fake."
-2.  **Per Group:** In the puzzle data, mark a specific clue group with `fake: true`. This enables the manual graying behavior only for that group.
-
-When this mode is active for a clue, the top clue bar will be blank when that clue's word is selected.
-
 ### Print Functionality
 The solver includes a "Print" option in the File menu, which utilizes `jsPDF` (bundled within `jscrossword_combined.js`) to generate a printable PDF version of the crossword. This feature allows users to print the current state of the puzzle directly from their browser.
 

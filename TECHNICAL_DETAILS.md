@@ -45,10 +45,6 @@ Game progress is automatically saved to the browser's `localStorage`.
 - Triggered by `crossword_type: 'diagramless'` in metadata.
 - **Behavior:** The grid is rendered without blocks initially (or as a plain field), and the "Top Clue" bar is hidden. Users must deduce the grid structure.
 
-### Fake Clues
-- Allows clues to be manually "checked off" by clicking them.
-- Used when clues don't have a 1:1 mapping to grid entries.
-
 ## 5. Development & Extension
 
 ### CSS & Theming

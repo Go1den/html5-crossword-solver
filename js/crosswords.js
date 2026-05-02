@@ -440,7 +440,6 @@ const IS_MOBILE = false;
         this.words = {};
 
         this.clueGroups = []; // array of clue groups
-        this.displayClueGroups = null; // for "fakeclues" puzzles
         this.activeClueGroupIndex = 0;
 
         this.selected_word = null;
@@ -459,62 +458,6 @@ const IS_MOBILE = false;
         this.updateClueLayout = this.updateClueLayout.bind(this);
 
         this.init();
-      }
-
-      make_fake_clues(puzzle, clue_mapping = {}) {
-
-        let across_group = new CluesGroup(this, {
-          id: "clues_0",
-          title: 'Across',
-          clues: [],
-          words_ids: [],
-          fake: true,
-        });
-
-        let down_group = new CluesGroup(this, {
-          id: "clues_1",
-          title: 'Down',
-          clues: [],
-          words_ids: [],
-          fake: true,
-        });
-
-        const clueMapping = {};
-
-        var clueGroups;
-
-        if (!this.realwords) {
-          const entry_mapping = puzzle.get_entry_mapping();
-          const thisGrid = JSCrossword.xwGrid(puzzle.cells);
-          const acrossSet = new Set(
-            Object.values(thisGrid.acrossEntries()).map(entry => entry.word)
-          );
-
-          Object.keys(entry_mapping).forEach((id) => {
-            const entry = entry_mapping[id];
-            const clue = {
-              word: id,
-              number: id,
-              text: '--'
-            };
-            clueMapping[id] = clue;
-            if (acrossSet.has(entry)) {
-              across_group.clues.push(clue);
-              across_group.words_ids.push(id);
-            } else {
-              down_group.clues.push(clue);
-              down_group.words_ids.push(id);
-            }
-          });
-          clueGroups = [across_group, down_group];
-        } else {
-          clueGroups = this.clueGroups;
-        }
-
-        return {
-          clueGroups: clueGroups,
-          clue_mapping: clueMapping
-        };
       }
 
       init() {
@@ -539,7 +482,6 @@ const IS_MOBILE = false;
         this.cells = {};
         this.words = {};
         this.clueGroups = [];
-        this.displayClueGroups = null;
 
         this.has_reveal = true;
         this.has_check = true;
@@ -685,7 +627,7 @@ const IS_MOBILE = false;
        * - Accepts either a JSCrossword object or raw string data.
        * - Normalizes coordinates (shift +1 to be 1-indexed).
        * - Detects puzzle type (crossword, acrostic, coded).
-       * - Initializes cells, words, and clues (real or fake).
+       * - Initializes cells, words, and clues.
        * - Enables autofill for acrostic/coded puzzles.
        */
       parsePuzzle(data) {
@@ -784,7 +726,6 @@ const IS_MOBILE = false;
         this.author = puzzle.metadata.author || '';
         this.copyright = puzzle.metadata.copyright || '';
         this.crossword_type = puzzle.metadata.crossword_type;
-        this.fakeclues = puzzle.metadata.fakeclues || false;
         this.realwords = puzzle.metadata.realwords || false;
         this.is_autofill = puzzle.metadata.autofill || false;
         this.notepad = puzzle.metadata.description || '';
@@ -800,9 +741,8 @@ const IS_MOBILE = false;
           this.is_autofill = true;
         }
 
-        const allGroupsFake = this.fakeclues || (puzzle.clues || []).every(g => g.fake);
-        if (allGroupsFake || this.crossword_type === 'diagramless' || this.crossword_type === 'coded') {
-          // top-text is meaningless if all groups are fake, or for diagramless/coded puzzles
+        if (this.crossword_type === 'diagramless' || this.crossword_type === 'coded') {
+          // top-text is meaningless for diagramless/coded puzzles
           $('div.cw-top-text-wrapper').css({
             display: 'none'
           });
@@ -925,70 +865,40 @@ const IS_MOBILE = false;
         // === Build clues ===
         let clueMapping = {};
 
-        if (this.crossword_type === 'coded') {
-          var fake_clue_obj = this.make_fake_clues(puzzle);
-          this.clueGroups = fake_clue_obj.clueGroups;
-          clueMapping = fake_clue_obj.clue_mapping;
+        // Initialize clue mapping and groups dynamically
+        this.clueGroups = [];
 
-          $('div.cw-clues-holder').css({
-            display: 'none'
-          });
-          $('div.cw-top-text-wrapper').css({
-            display: 'none'
-          });
-          $('div.cw-buttons-holder').css({
-            padding: '0 10px'
-          });
+        // Defensive: if no clues array exists
+        const clueSets = puzzle.clues || [];
 
-        } else {
-          // Initialize clue mapping and groups dynamically
-          this.clueGroups = [];
+        // Create one CluesGroup per clue set
+        clueSets.forEach((clueSet, index) => {
+          // Normalize title and word IDs
+          const title = this.normalizeClueTitle(clueSet.title || `Clue Set ${index + 1}`);
+          const clues = clueSet.clue || [];
 
-          // Defensive: if no clues array exists
-          const clueSets = puzzle.clues || [];
-
-          // Create one CluesGroup per clue set
-          clueSets.forEach((clueSet, index) => {
-            // Normalize title and word IDs
-            const title = this.normalizeClueTitle(clueSet.title || `Clue Set ${index + 1}`);
-            const clues = clueSet.clue || [];
-
-            // Populate global mapping for quick lookup
-            clues.forEach(clue => {
-              if (clue.word) clueMapping[clue.word] = clue;
-            });
-
-            const words_ids = clues.map(c => c.word);
-
-            // Create and store CluesGroup instance
-            const group = new CluesGroup(this, {
-              id: `clues_${index}`,
-              title,
-              clues,
-              words_ids,
-              fake: Boolean(clueSet.fake),
-            });
-
-            this.clueGroups.push(group);
+          // Populate global mapping for quick lookup
+          clues.forEach(clue => {
+            if (clue.word) clueMapping[clue.word] = clue;
           });
 
-        }
+          const words_ids = clues.map(c => c.word);
+
+          // Create and store CluesGroup instance
+          const group = new CluesGroup(this, {
+            id: `clues_${index}`,
+            title,
+            clues,
+            words_ids
+          });
+
+          this.clueGroups.push(group);
+        });
 
         if (this.config.downsOnly && this.clueGroups.length > 0) {
           this.clueGroups[0].clues.forEach(clue => {
             clue.text = '---';
           });
-        }
-
-        // Handle fake clues override
-        var num_words = puzzle.words.length;
-        var num_clues = puzzle.clues.map(x => x.clue).flat().length;
-        if (this.fakeclues && num_words != num_clues) {
-          // make a copy of the clue groups for display
-          this.displayClueGroups = [...this.clueGroups];
-          var fake_clue_obj = this.make_fake_clues(puzzle);
-          this.clueGroups = fake_clue_obj.clueGroups;
-          clueMapping = fake_clue_obj.clue_mapping;
         }
 
         // Update DOM with clue info
@@ -997,7 +907,7 @@ const IS_MOBILE = false;
 
         holder.innerHTML = ''; // clear old ones
 
-        (this.displayClueGroups || this.clueGroups).forEach((group, index) => {
+        (this.clueGroups).forEach((group, index) => {
           const div = document.createElement('div');
           div.classList.add('cw-clues');
           if (this.config.downsOnly && index === 0) {
@@ -1017,10 +927,11 @@ const IS_MOBILE = false;
         this.words = {};
         for (var i = 0; i < puzzle.words.length; i++) {
           const word = puzzle.words[i];
+          console.log("building words bitch");
+          console.log(word);
           this.words[word.id] = new Word(this, {
             id: word.id,
             dir: word.dir,
-            refs_raw: null,
             cell_ranges: word.cells.map(function(c) {
               return {
                 x: (c[0] + 1).toString(),
@@ -1149,14 +1060,14 @@ const IS_MOBILE = false;
 
         this.notepad_icon = this.root.find('.cw-button-notepad');
 
-        // === Initial cell selection (diagramless or fakeclues) ===
-        if (this.diagramless_mode || this.fakeclues) {
+        // === Initial cell selection (diagramless) ===
+        if (this.diagramless_mode) {
           const firstCell = this.getCell(1, 1);
           if (firstCell) {
             this.setSelectedCell(firstCell);
             this.setSelectedWord(null);
             this.top_text.html(''); // Clear top clue text
-            const initMessage = (this.diagramless_mode ? '[Diagramless Init]' : '[Fakeclues Init]');
+            const initMessage = '[Diagramless Init]';
             console.log(initMessage, {
               selected_cell: this.selected_cell,
               selected_word: this.selected_word,
@@ -1165,7 +1076,7 @@ const IS_MOBILE = false;
           }
         }
 
-        (this.displayClueGroups || this.clueGroups || []).forEach(group => {
+        (this.clueGroups || []).forEach(group => {
           // Find the container that matches this group’s ID
           const container = document.querySelector(`.cw-clues[data-group-id="${group.id}"] .cw-clues-items`);
           if (container) {
@@ -1173,67 +1084,9 @@ const IS_MOBILE = false;
             this.renderClues(displayGroup, container);
           }
         });
+
         this.addListeners();
-
-        // Add "Extra Clues" button if there are fake clue groups
-        if (this.clueGroups && this.clueGroups.some(g => g.isFake)) {
-          const extraCluesBtn = document.createElement('button');
-          extraCluesBtn.className = 'cw-button cw-button-extra-clues';
-          extraCluesBtn.innerHTML = '<span class="cw-button-icon">➕</span> Show unmatched clues';
-          extraCluesBtn.style.margin = '10px auto';
-          extraCluesBtn.style.maxWidth = '200px';
-          // Initial visibility state handled by CSS via breakpoints
-
-          extraCluesBtn.onclick = () => {
-            let cluesHtml = '<div class="unmatched-clues-modal-wrapper">';
-            // Use displayClueGroups if available, otherwise fallback to clueGroups
-            const groupsToShow = (this.displayClueGroups || this.clueGroups).filter(g => g.isFake);
-            groupsToShow.forEach(group => {
-              cluesHtml += `<div class="unmatched-clue-group-title">${group.title}</div><div class="unmatched-clues-list">`;
-              group.clues.forEach(clue => {
-                const isCompleted = clue.fakeClueCompleted ? 'completed' : '';
-                cluesHtml += `<div class="unmatched-clue-item ${isCompleted}" data-word="${clue.wordId}" data-clues="${group.id}">
-                  <span class="unmatched-clue-number">${clue.number}</span>
-                  <span class="unmatched-clue-text">${clue.text}</span>
-                </div>`;
-              });
-              cluesHtml += '</div>';
-            });
-            cluesHtml += '</div>';
-
-            this.createModalBox('Unmatched Clues', cluesHtml);
-
-            // Add click handlers for clues in the modal
-            $('.unmatched-clues-modal-wrapper').off('click').on('click', '.unmatched-clue-item', (e) => {
-              const target = $(e.currentTarget);
-              const groupId = target.attr('data-clues');
-              const wordId = target.attr('data-word');
-
-              // Find group in either collection
-              const clueGroup = (this.displayClueGroups || this.clueGroups).find(g => g.id === groupId);
-              if (!clueGroup) return;
-
-              const clue = clueGroup.clues.find(c => String(c.wordId) === String(wordId));
-
-              if (clue) {
-                clue.fakeClueCompleted = !Boolean(clue.fakeClueCompleted);
-                target.toggleClass('completed', clue.fakeClueCompleted);
-                // Also update the hidden clue in the main holder if it exists
-                const mainClue = $(`.cw-clues-holder [data-word="${wordId}"][data-clues="${groupId}"]`);
-                if (mainClue.length) {
-                  mainClue.toggleClass('completed', clue.fakeClueCompleted);
-                }
-              }
-            });
-          };
-
-          if (this.extra_clues_holder) {
-            this.extra_clues_holder.empty().append(extraCluesBtn);
-          }
-        }
-
         this.root.removeClass('loading');
-
         this.root.addClass('loaded');
 
         this.waitUntilSVGWidthStabilizes(() => {
@@ -1667,10 +1520,6 @@ const IS_MOBILE = false;
         if (word) {
           this.setSelectedWord(word);
           const group = this.clueGroups[this.activeClueGroupIndex];
-          if (this.fakeclues || (group && group.isFake)) {
-            this.top_text.html('');
-            return;
-          }
           this.top_text.html(`
             <span class="cw-clue-number">
               ${escape(word.clue.number)}${this.isAcross(word.cell_ranges) ? "A" : "D"}
@@ -1718,7 +1567,7 @@ const IS_MOBILE = false;
           // The first param (`isInactive`) is true for all groups except the active one
           const isInactive = group !== this.clueGroups[this.activeClueGroupIndex];
           if (typeof group.markActive === 'function') {
-            group.markActive(cell.x, cell.y, isInactive, this.fakeclues);
+            group.markActive(cell.x, cell.y, isInactive);
           }
         });
 
@@ -2358,13 +2207,7 @@ const IS_MOBILE = false;
         // If still nothing found, just stay on current group
         if (matchingWord) {
           this.setActiveWord(matchingWord);
-        } else {
-          // If no matching word found and current group is fake, clear top text
-          const currentGroup = this.clueGroups[this.activeClueGroupIndex];
-          if (this.fakeclues || (currentGroup && currentGroup.isFake)) {
-            this.top_text.html('');
-          }
-        }
+        } 
 
         // Update cell selection and redraw
         this.setActiveCell(clickedCell);
@@ -3077,15 +2920,6 @@ const IS_MOBILE = false;
         const groupIndex = this.clueGroups.findIndex(g => g.id === clickedGroupId);
         const group = this.clueGroups[groupIndex];
 
-        if (this.fakeclues || (group && group.isFake)) {
-          // Toggle "completed" state on the clue itself
-          clue.fakeClueCompleted = !Boolean(clue.fakeClueCompleted);
-
-          // Update this specific clue element immediately
-          this.updateClueAppearance(clue, target);
-          return;
-        }
-
         if (!word) return;
 
         if (this.diagramless_mode) return;
@@ -3705,8 +3539,8 @@ const IS_MOBILE = false;
         const groupId = clueEl.data('clues');
         const group = this.clueGroups.find(g => g.id === groupId);
 
-        if (!this.config.gray_completed_clues && (!group || !group.isFake) && !this.fakeclues) {
-          // Reset clue styling if the setting is turned off and this is not a fake clue context
+        if (!this.config.gray_completed_clues) {
+          // Reset clue styling if the setting is turned off
           textEl.css({
             "text-decoration": "",
             "color": ""
@@ -3714,11 +3548,9 @@ const IS_MOBILE = false;
           return;
         }
 
-        // Determine if it should be gray based on fakeclues context or word fill state
+        // Determine if it should be gray based on word fill state
         let shouldGray = false;
-        if (this.fakeclues || (group && group.isFake)) {
-          shouldGray = Boolean(clue.fakeClueCompleted);
-        } else if (clue.word && this.words[clue.word]) {
+        if (clue.word && this.words[clue.word]) {
           shouldGray = this.words[clue.word].isFilled();
         }
 
@@ -3754,6 +3586,7 @@ const IS_MOBILE = false;
       }
 
       setSelectedWord(new_word) {
+        console.log(new_word);
         const prev_word = this.selected_word;
         if (prev_word === new_word) {
           return;
@@ -3779,7 +3612,6 @@ const IS_MOBILE = false;
         this.clues_container = null;
         this.words_ids = [];
         this.crossword = crossword;
-        this.isFake = data.fake || this.crossword.fakeclues || false;
         if (data) {
           if (
             data.hasOwnProperty('id') &&
@@ -3865,9 +3697,9 @@ const IS_MOBILE = false;
       }
 
       // in clues list, marks clue for word that has cell with given coordinates
-      markActive(x, y, is_passive, fakeclues = false) {
-        // don't mark anything as active if fake clues
-        if (this.isFake || this.crossword.diagramless_mode) {
+      markActive(x, y, is_passive) {
+        // don't mark anything as active if diagramless
+        if (this.crossword.diagramless_mode) {
           return;
         }
         var classname = is_passive ? 'passive' : 'active',
@@ -3933,22 +3765,20 @@ const IS_MOBILE = false;
         this.cell_ranges = [];
         this.cells = [];
         this.clue = {};
-        this.refs_raw = [];
-        this.fakeClueCompleted = false;
         this.crossword = crossword;
         if (data) {
           if (
             data.hasOwnProperty('id') &&
             data.hasOwnProperty('dir') &&
             data.hasOwnProperty('cell_ranges') &&
-            data.hasOwnProperty('clue') &&
-            data.hasOwnProperty('refs_raw')
+            data.hasOwnProperty('clue')
           ) {
             this.id = data.id;
             this.dir = data.dir;
             this.cell_ranges = data.cell_ranges;
             this.clue = data.clue;
-            //this.refs_raw = data.clue.refs;
+            this.clue.starred = data.clue.text.startsWith('*');
+            this.clue.starredTheme = data.clue.text.toLowerCase().indexOf('starred clue') !== -1;
             this.parseRanges();
           } else {
             load_error = true;
