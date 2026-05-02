@@ -942,6 +942,19 @@ const IS_MOBILE = false;
           });
         }
 
+        // === Set word directions based on clue groups ===
+        this.clueGroups.forEach(group => {
+          // Determine direction from group title
+          const dir = group.title.toUpperCase() === 'ACROSS' ? 'Across' : 'Down';
+          
+          // Set dir on all words in this group
+          group.words_ids.forEach(wordId => {
+            if (this.words[wordId]) {
+              this.words[wordId].dir = dir;
+            }
+          });
+        });
+
         this.completeLoad();
       }
 
