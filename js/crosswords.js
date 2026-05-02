@@ -927,8 +927,6 @@ const IS_MOBILE = false;
         this.words = {};
         for (var i = 0; i < puzzle.words.length; i++) {
           const word = puzzle.words[i];
-          console.log("building words bitch");
-          console.log(word);
           this.words[word.id] = new Word(this, {
             id: word.id,
             dir: word.dir,
