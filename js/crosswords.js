@@ -3157,7 +3157,12 @@ const CONFIGURABLE_SETTINGS = [
         let tempWord = null;
         for (const index in this.words) {
           tempWord = this.words[index];
-          if (word.references.includes(tempWord.name)) {
+          console.log(tempWord);
+          console.log(word);
+          if (word.references.includes(tempWord.name)
+              || (word.clue.starred && tempWord.clue.starredTheme)
+              || (word.clue.starredTheme && tempWord.clue.starred)
+          ) {
             associated.push(tempWord);
           }
         }
