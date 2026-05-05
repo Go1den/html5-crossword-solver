@@ -1,22 +1,22 @@
 const { app, BrowserWindow } = require('electron')
 
+// run this as early in the main process as possible
+if (require('electron-squirrel-startup')) app.quit();
+
+app.setAppUserModelId("com.squirrel.PuzGod.PuzGod");
+
 const createWindow = () => {
   const win = new BrowserWindow({
 	  show: false,
-	  fullscreen: true,
+	  fullscreen: false,
 	  width: 1280,
 	  height: 720,
 	  minWidth: 1280,
-	  minHeight: 720,
-    webPreferences: {
-      nodeIntegration: false
-    }
+	  minHeight: 720
   }
   )
-  win.maximize()
-  win.show()
-  win.webContents.openDevTools()
   win.loadFile('index.html')
+  win.show()
 }
 
 app.whenReady().then(() => {
