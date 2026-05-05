@@ -1,5 +1,5 @@
 // CRITICAL: You MUST change this string (e.g., v3, v4) every time you deploy a new update!
-const CACHE_NAME = "xw-solver-v2026.5.2";
+const CACHE_NAME = "puzgod-v2026.5.5";
 
 const ASSETS = [
     "./",
