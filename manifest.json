@@ -1,6 +1,6 @@
 {
-  "name": "Crossword Nexus Solver",
-  "short_name": "XW Solver",
+  "name": "PuzGod",
+  "short_name": "PuzGod",
   "start_url": ".",
   "display": "standalone",
   "background_color": "#ffffff",

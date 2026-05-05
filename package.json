@@ -1,0 +1,27 @@
+{
+  "name": "PuzGod",
+  "version": "1.0.0",
+  "description": "Offline Crossword Solver for .puz files",
+  "homepage": "https://github.com/Go1den/html5-crossword-solver#readme",
+  "bugs": {
+    "url": "https://github.com/Go1den/html5-crossword-solver/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Go1den/html5-crossword-solver.git"
+  },
+  "license": "ISC",
+  "author": "Go1den",
+  "type": "commonjs",
+  "main": "main.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "scripts": {
+    "start": "electron .",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "devDependencies": {
+    "electron": "^41.5.0"
+  }
+}

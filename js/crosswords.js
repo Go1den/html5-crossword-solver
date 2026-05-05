@@ -428,6 +428,7 @@ const CONFIGURABLE_SETTINGS = [
         this.selected_word = null;
         this.selected_cell = null;
         this.settings_open = false;
+        this.isModal = false;
         // TIMER
         this.timer_running = false;
 
@@ -677,7 +678,7 @@ const CONFIGURABLE_SETTINGS = [
         this.completion_message = puzzle.metadata.completion_message || "Puzzle solved!";
 
         if (this.title) {
-          document.title = this.title + ' | Crossword Nexus Solver';
+          document.title = this.title + ' | PuzGod';
         }
 
         // disable check and reveal in certain cases
@@ -1266,6 +1267,7 @@ const CONFIGURABLE_SETTINGS = [
 
       // Create a generic modal box with content
       createModalBox(title, content, button_text = 'Close') {
+        this.isModal = true;
         // Set the contents of the modal box
         const modalContent = `
         <div class="modal-content">
@@ -1289,24 +1291,40 @@ const CONFIGURABLE_SETTINGS = [
 
         // Allow user to close the div
         const this_hidden_input = this.hidden_input;
+        const crossword = this; // Capture reference to crossword object
         var span = this.root.find('.modal-close').get(0);
         // When the user clicks on <span> (x), close the modal
         span.onclick = function() {
+          crossword.isModal = false;
           modal.style.display = 'none';
           this_hidden_input.focus();
+          var isRebus = document.getElementById("rebus-text"); 
+          if (isRebus) {
+            crossword.hiddenInputChanged(document.getElementById("rebus-text").value);
+          }
         };
         // When the user clicks anywhere outside of the modal, close it
         window.onclick = function(event) {
           if (event.target == modal) {
+            crossword.isModal = false;
             modal.style.display = 'none';
             this_hidden_input.focus();
+            var isRebus = document.getElementById("rebus-text"); 
+            if (isRebus) {
+              crossword.hiddenInputChanged(document.getElementById("rebus-text").value);
+            }
           }
         };
         // Clicking the button should close the modal
         var modalButton = document.getElementById('modal-button');
         modalButton.onclick = function() {
+          crossword.isModal = false;
           modal.style.display = 'none';
           this_hidden_input.focus();
+          var isRebus = document.getElementById("rebus-text"); 
+          if (isRebus) {
+            crossword.hiddenInputChanged(document.getElementById("rebus-text").value);
+          }
         };
       }
 
@@ -1865,6 +1883,8 @@ const CONFIGURABLE_SETTINGS = [
         if (!slash) {
           return;
         }
+        slash.setAttribute('stroke', 'var(--grid-none-text-color)');
+        slash.setAttribute('stroke-width', 2);
       }
 
       cellFillColor(cell) {
@@ -1994,13 +2014,13 @@ const CONFIGURABLE_SETTINGS = [
       prepareRebus() {
         if (this.selected_cell && this.selected_word) {
           this.hidden_input.val('');
-          var rebus_entry = prompt('Rebus Entry', '');
-          this.hiddenInputChanged(rebus_entry);
+          this.openRebus();
         }
       }
 
       keyPressed(e) {
-        if (this.settings_open) {
+        console.log(this.isModal);
+        if (this.settings_open || this.isModal) {
           return;
         }
 
@@ -2091,8 +2111,7 @@ const CONFIGURABLE_SETTINGS = [
             break;
           case 45: // insert -- same as escape
             if (this.selected_cell && this.selected_word) {
-              var rebus_entry = prompt('Rebus entry', '');
-              this.hiddenInputChanged(rebus_entry);
+              this.openRebus();
             }
             break;
           case 46: // delete
@@ -2813,6 +2832,18 @@ const CONFIGURABLE_SETTINGS = [
             }
             this.saveSettings();
           });
+      }
+
+      openRebus() {
+        // Create a modal box
+        var rebusHTML = `
+        <div class="rebus-wrapper">
+          <input type="text" id="rebus-text" class="rebus-text">
+		    </div>
+        `;
+
+        this.createModalBox('Rebus', rebusHTML, 'Submit');
+        document.getElementById("rebus-text").focus();
       }
 
       fillJsXw() {

@@ -37,7 +37,6 @@
   width: auto;
   margin-top: 70px; /* Increase to make the gap between clue box and puzzle larger */
   align-self: center;
-  border-radius: 4px;
 }
 
 #cw-puzzle-grid text {
@@ -60,7 +59,6 @@
   margin-top: 10px;
   max-height: 594px;
   margin-bottom: 25px;
-  border-radius: 4px;
   padding-bottom: 10px;
 }
 
@@ -75,27 +73,6 @@
   font-size: 1em;
 }
 
-/* Custom scrollbar styling */
-/* Chrome, Edge, Safari */
-.cw-clues-items::-webkit-scrollbar {
-  width: 5px;
-}
-
-.cw-clues-items::-webkit-scrollbar-track {
-  border-radius: 50px;
-}
-
-.cw-clues-items::-webkit-scrollbar-thumb {
-  background-color: var(--clue-scrollbar-color-thumb);
-  border-radius: 50px;
-  transition: scrollbar-color 0.3s ease-out;
-}
-
-.cw-clues-items::-webkit-scrollbar-thumb:hover {
-  background-color: var(--clue-scrollbar-color-thumb)
-}
-
-/* End custom scrollbar styling */
 .cw-clue {
   padding: 6px 0px;
   margin-right: 3px;
