@@ -1,101 +1,15 @@
-# Crossword Nexus HTML5 Solver
-An HTML5 crossword solver that can handle multiple puzzle formats (JPZ, PUZ, iPuz, etc.) in a browser. This solver is designed to be easily embedded into any website.
-
-## Dependencies
-- **jQuery**: Required for DOM manipulation and events.
-- **jsPDF** (bundled in `jscrossword_combined.js`): Used for the "Print" functionality.
-- **JSCrossword tools**: A submodule providing core puzzle parsing logic.
-- **lscache**: For saving game progress to local storage.
+# PuzGod
+An Electron-wrapped, lightweight version of HTML 5 crossword solver. This can run as a standalone app on your PC. Handles multiple puzzle formats (JPZ, PUZ, iPuz, etc.) in a browser.
 
 ## Installation
+Download the executable from the Releases page. Running it for the first time will automatically install it on a Windows machine.
 
-### Using git (recommended)
-To get the latest version and all necessary submodules, clone the repository recursively:
-```bash
-git clone --recurse-submodules https://github.com/crosswordnexus/html5-crossword-solver/
-```
-To update your installation, navigate to the directory and run `git pull`.
+## Supports
+Crosswords
+Rebus entries
 
-### Using a zip file
-Download the latest release from the [Releases page](https://github.com/crosswordnexus/html5-crossword-solver/releases), unzip it, and place the `html5-crossword-solver` directory on your server.
-
-## Basic Usage
-You can create a fullscreen solving page by pointing `index.html` to a puzzle file via a URL parameter.
-
-**URL Structure:**
-`https://YOUR.SITE/html5-crossword-solver/index.html?file=/PATH/TO/YOUR/FILE.jpz`
-
-This supports `.puz`, `.ipuz`, `.jpz`, and `.cfp` files. You can embed this URL in an `<iframe>` on your site:
-
-```html
-<iframe 
-  allowfullscreen="true" 
-  height="550" 
-  width="100%" 
-  style="border:none;"
-  src="https://YOUR.SITE/html5-crossword-solver/index.html?file=/PATH/TO/YOUR/FILE.jpz">
-</iframe>
-```
-
-## Advanced Usage
-To integrate the solver directly into your page, you can initialize it with a JavaScript call.
-
-```javascript
-// The parent element where the crossword will be rendered
-var parentElement = $('#crossword-container');
-
-// Configuration options
-var params = {
-  puzzle_file: { url: '/puzzles/puzzle1.jpz' }
-};
-
-// Create the crossword instance
-var crossword = CrosswordNexus.createCrossword(parentElement, params);
-```
-
-### Removing the Crossword
-The solver adds listeners to the `window` object. To prevent memory leaks when removing the crossword from your page, you must call the `remove()` method.
-
-```javascript
-crossword.remove();
-```
-
----
-
-## Configuration Parameters
-You can customize the solver's behavior by passing a parameters object. Here are the available options:
-
-| Parameter | Type | Default | Description |
-|---|---|---|---|
-| `puzzle_file` | `object` | `null` | An object with `{ url: '...' }` to load a puzzle from a URL. |
-| `puzzle_object`| `object`| `null` | A pre-parsed `jsxw` puzzle object to load directly. |
-| `skip_filled_letters` | `boolean` | `true` | If true, the cursor skips over already-filled cells. |
-| `arrow_direction`| `string` | `'arrow_move_filled'` | Controls how arrow keys behave (e.g., `'arrow_move_filled'` skips filled cells, `'arrow_always_move'` does not). |
-| `puzzle_size` | `string` | `'standard'` | Determines the layout of the screen (e.g. `'puzzle_size_standard'` is default, `'puzzle_size_large'` is designed for streams, and `'puzzle_size_full_screen'` tries to use as much space as possible) |
-| `space_bar` | `string` | `'space_clear'` | Defines the action of the spacebar (e.g., `'space_clear'` clears a cell, `'space_toggles_direction'` switches between Across/Down). |
-| `tab_key` | `string` | `'tab_noskip'` | Defines the behavior of the Tab key for navigating clues. |
-| `gray_completed_clues` | `boolean`| `false` | If true, clues are automatically grayed out when the corresponding word is filled. |
-| `timer_autostart`| `boolean`| `false` | If true, the puzzle timer starts automatically on load. |
-| `confetti_enabled` | `boolean`| `true` | Enables a confetti animation when the puzzle is successfully solved. |
-| `notepad_name` | `string` | `'Notes'` | Customizes the title of the notepad feature. |
-| `min_sidebar_clue_width` | `number`| `220` | Minimum width of the sidebar containing the clues. |
-| `save_game_limit` | `number`| `10` | Maximum number of saved games to keep in local storage. |
+## Does not support
+Acrostic, Diagramless, Coded, or other non-standard crossword formats
 
 ### Print Functionality
 The solver includes a "Print" option in the File menu, which utilizes `jsPDF` (bundled within `jscrossword_combined.js`) to generate a printable PDF version of the crossword. This feature allows users to print the current state of the puzzle directly from their browser.
-
-### Color Customization
-The following parameters allow you to change the solver's color scheme.
-
-| Parameter | Type | Default | Description |
-|---|---|---|---|
-| `color_selected`| `string` | `'#FF4136'` | Background color of the currently selected cell. |
-| `color_word` | `string` | `'#FEE300'` | Background color for all other cells in the active word. |
-| `color_associated` | `string` | `'#FFECA0'` | Background color for all cells associated with the active clue. |
-| `color_none` | `string` | `'#FFFFFF'` | Default background color for empty cells. |
-| `background_color_clue` | `string`| `'#666666'` | Background color for block cells containing text. |
-| `font_color_fill`| `string` | `'#000000'` | Font color for filled letters. |
-| `bar_linewidth` | `number`| `3.2` | Line width for cell borders (bars). |
-
-## Deployment Note
-**CRITICAL:** Every time you deploy a new update to the solver, you **must** update the `CACHE_NAME` constant in `sw.js` (e.g., `const CACHE_NAME = "xw-solver-v2026.4.26";`). This ensures that users' browsers invalidate the old cache and download the latest versions of the files.
