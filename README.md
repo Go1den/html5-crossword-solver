@@ -6,11 +6,13 @@ Download the executable from the Releases page.
 Running it for the first time will automatically install it on a Windows machine.
 
 ## Supports
-Crosswords  
-Rebus entries
+*Crosswords   
+*Rebus entries
 
 ## Does not support
-Acrostic, Diagramless, Coded, or other non-standard crossword formats
+*Acrostic  
+*Diagramless  
+*Coded
 
-### Print Functionality
+## Print Functionality
 The solver includes a "Print" option in the File menu, which utilizes `jsPDF` (bundled within `jscrossword_combined.js`) to generate a printable PDF version of the crossword. This feature allows users to print the current state of the puzzle directly from their browser.
